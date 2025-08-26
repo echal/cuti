@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+        }
+        .header-section {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 2rem;
+            text-align: center;
+        }
+        .form-section {
+            padding: 2rem;
+        }
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .btn-login:hover {
+            background: linear-gradient(45deg, #218838, #1ea384);
+        }
+        .validation-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header Section -->
+            <div class="header-section">
+                <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                <h3 class="mb-2">Aplikasi Cuti</h3>
+                <p class="mb-0">Kanwil Kementerian Agama Sulawesi Barat</p>
+            </div>
+
+            <!-- Form Section -->
+            <div class="form-section">
+                <!-- Flash Messages -->
+                {% for flash_message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ flash_message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+
+                {% for flash_message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ flash_message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+
+                {% for flash_message in app.flashes('info') %}
+                    <div class="alert alert-info alert-dismissible fade show">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {{ flash_message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+
+                <!-- Login Form -->
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="mb-3">
+                    <label for="{{ form.nip.vars.id }}" class="form-label">
+                        <i class="fas fa-id-card me-2"></i>{{ form.nip.vars.label }}
+                    </label>
+                    {{ form_widget(form.nip) }}
+                    
+                    <!-- Display validation errors for NIP -->
+                    {% if form.nip.vars.errors|length > 0 %}
+                        <div class="validation-error">
+                            {% for error in form.nip.vars.errors %}
+                                <i class="fas fa-exclamation-triangle me-1"></i>{{ error.message }}<br>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="form-text">{{ form.nip.vars.help }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.password.vars.id }}" class="form-label">
+                        <i class="fas fa-lock me-2"></i>{{ form.password.vars.label }}
+                    </label>
+                    {{ form_widget(form.password) }}
+                    
+                    <!-- Display validation errors for Password -->
+                    {% if form.password.vars.errors|length > 0 %}
+                        <div class="validation-error">
+                            {% for error in form.password.vars.errors %}
+                                <i class="fas fa-exclamation-triangle me-1"></i>{{ error.message }}<br>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="form-text">{{ form.password.vars.help }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-login text-white">
+                        <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+
+                <!-- Demo Information -->
+                <div class="mt-4 pt-3 border-top">
+                    <h6><i class="fas fa-info-circle me-2"></i>Informasi Demo</h6>
+                    <div class="small">
+                        <p class="mb-2"><strong>User Demo (dari fixtures):</strong></p>
+                        <ul class="list-unstyled ps-3">
+                            <li><i class="fas fa-user me-1"></i> Admin: 199001012020121001</li>
+                            <li><i class="fas fa-user me-1"></i> Siti Aminah: 198901012014121001</li>
+                            <li><i class="fas fa-user me-1"></i> Abdul Rahman: 199205102022021001</li>
+                            <li><i class="fas fa-user me-1"></i> Fatimah Zahra: 199712252019032001</li>
+                        </ul>
+                        <p class="text-muted mb-0">
+                            <small>* Untuk demo, password belum di-set pada fixtures. Update password manual di database.</small>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Validation Rules -->
+                <div class="mt-3">
+                    <h6><i class="fas fa-shield-alt me-2"></i>Aturan Validasi</h6>
+                    <div class="small text-muted">
+                        <p class="mb-1"><strong>NIP:</strong></p>
+                        <ul class="list-unstyled ps-3 mb-2">
+                            <li><i class="fas fa-check-circle text-success me-1"></i> Wajib diisi</li>
+                            <li><i class="fas fa-check-circle text-success me-1"></i> Harus 18 digit angka</li>
+                        </ul>
+                        <p class="mb-1"><strong>Password:</strong></p>
+                        <ul class="list-unstyled ps-3 mb-0">
+                            <li><i class="fas fa-check-circle text-success me-1"></i> Wajib diisi</li>
+                            <li><i class="fas fa-check-circle text-success me-1"></i> Minimal 8 karakter</li>
+                            <li><i class="fas fa-check-circle text-success me-1"></i> Harus ada huruf kecil, huruf besar, dan angka</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Real-time validation feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const nipField = document.getElementById('{{ form.nip.vars.id }}');
+            const passwordField = document.getElementById('{{ form.password.vars.id }}');
+            
+            // NIP validation
+            nipField.addEventListener('input', function() {
+                const value = this.value;
+                const isValid = /^\d{18}$/.test(value);
+                
+                if (value.length > 0) {
+                    this.classList.toggle('is-valid', isValid && value.length === 18);
+                    this.classList.toggle('is-invalid', !isValid && value.length > 0);
+                }
+            });
+            
+            // Password validation
+            passwordField.addEventListener('input', function() {
+                const value = this.value;
+                const hasLower = /[a-z]/.test(value);
+                const hasUpper = /[A-Z]/.test(value);
+                const hasNumber = /\d/.test(value);
+                const isLongEnough = value.length >= 8;
+                
+                const isValid = hasLower && hasUpper && hasNumber && isLongEnough;
+                
+                if (value.length > 0) {
+                    this.classList.toggle('is-valid', isValid);
+                    this.classList.toggle('is-invalid', !isValid && value.length > 0);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

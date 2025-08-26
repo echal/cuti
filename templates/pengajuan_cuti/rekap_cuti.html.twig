@@ -1,0 +1,351 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rekap Cuti {{ tahun }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-table"></i>
+        Rekap Cuti Tahun {{ tahun }}
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <select class="form-select" id="tahunSelect" onchange="changeTahun(this.value)">
+                {% for year in range('now'|date('Y') - 2, 'now'|date('Y') + 1) %}
+                    <option value="{{ year }}" {{ year == tahun ? 'selected' : '' }}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer"></i> Cetak
+        </button>
+    </div>
+</div>
+
+{# Summary Cards #}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Hak Cuti {{ tahun }}</h5>
+                <h3 class="text-primary">{{ hakCuti.hakTahunan ?? 12 }} <small class="text-muted">hari</small></h3>
+                <small class="text-muted">Hak cuti tahunan</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h5 class="card-title text-warning">Cuti Tahun Lalu (N-1)</h5>
+                <h3 class="text-warning">{{ cutiDibawa.n1 ?? 0 }} <small class="text-muted">hari</small></h3>
+                <small class="text-muted">Carry over {{ tahun - 1 }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h5 class="card-title text-info">Cuti Dua Tahun Lalu (N-2)</h5>
+                <h3 class="text-info">{{ cutiDibawa.n2 ?? 0 }} <small class="text-muted">hari</small></h3>
+                <small class="text-muted">Carry over {{ tahun - 2 }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">Total Sisa</h5>
+                <h3 class="text-success">{{ totalSisa }} <small class="text-muted">hari</small></h3>
+                <small class="text-muted">Sisa yang dapat digunakan</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Tabel Rekap Lengkap #}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-table"></i>
+            Rekap Cuti Lengkap
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th rowspan="2" class="text-center align-middle">
+                            <i class="bi bi-person"></i><br>
+                            Pegawai
+                        </th>
+                        <th colspan="4" class="text-center">Hak Cuti (Hari)</th>
+                        <th rowspan="2" class="text-center align-middle">
+                            <i class="bi bi-calculator"></i><br>
+                            Total Hak
+                        </th>
+                        <th rowspan="2" class="text-center align-middle">
+                            <i class="bi bi-check-circle"></i><br>
+                            Terpakai
+                        </th>
+                        <th rowspan="2" class="text-center align-middle">
+                            <i class="bi bi-hourglass-split"></i><br>
+                            Sisa
+                        </th>
+                        <th rowspan="2" class="text-center align-middle">
+                            <i class="bi bi-percent"></i><br>
+                            Persentase
+                        </th>
+                    </tr>
+                    <tr class="table-secondary">
+                        <th class="text-center">Hak {{ tahun }}</th>
+                        <th class="text-center">Cuti Tahun Lalu<br><small>(N-1)</small></th>
+                        <th class="text-center">Cuti Dua Tahun Lalu<br><small>(N-2)</small></th>
+                        <th class="text-center">Dalam Proses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rekapUser in rekapData %}
+                    {% set hakTahunanUser = rekapUser.hakTahunan %}
+                    {% set cutiTahunLalu = rekapUser.cutiTahunLalu %}
+                    {% set cutiDuaTahunLalu = rekapUser.cutiDuaTahunLalu %}
+                    {% set dalamProses = rekapUser.dalamProses %}
+                    {% set totalHakUser = hakTahunanUser + cutiTahunLalu + cutiDuaTahunLalu %}
+                    {% set terpakaiUser = rekapUser.terpakai %}
+                    {% set sisaUser = totalHakUser - terpakaiUser - dalamProses %}
+                    {% set persentase = totalHakUser > 0 ? (terpakaiUser / totalHakUser * 100) : 0 %}
+                    
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-primary text-white me-2 d-none d-md-flex">
+                                    {{ rekapUser.user.nama|first|upper }}
+                                </div>
+                                <div>
+                                    <strong>{{ rekapUser.user.nama }}</strong><br>
+                                    <small class="text-muted">
+                                        {{ rekapUser.user.nip }}<br>
+                                        {{ rekapUser.user.unitKerja.nama }}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary fs-6">{{ hakTahunanUser }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if cutiTahunLalu > 0 %}
+                                <span class="badge bg-warning fs-6">{{ cutiTahunLalu }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if cutiDuaTahunLalu > 0 %}
+                                <span class="badge bg-info fs-6">{{ cutiDuaTahunLalu }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if dalamProses > 0 %}
+                                <span class="badge bg-warning fs-6">{{ dalamProses }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <strong class="text-primary">{{ totalHakUser }}</strong>
+                        </td>
+                        <td class="text-center">
+                            {% if terpakaiUser > 0 %}
+                                <span class="badge bg-danger fs-6">{{ terpakaiUser }}</span>
+                            {% else %}
+                                <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if sisaUser > 0 %}
+                                <span class="badge bg-success fs-6">{{ sisaUser }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="progress" style="width: 60px;">
+                                <div class="progress-bar 
+                                    {% if persentase < 50 %}bg-success
+                                    {% elseif persentase < 80 %}bg-warning  
+                                    {% else %}bg-danger
+                                    {% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ persentase }}%"
+                                     title="{{ persentase|round(1) }}%">
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ persentase|round(1) }}%</small>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            Belum ada data rekap cuti untuk tahun {{ tahun }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+                {# Footer Summary #}
+                {% if rekapData|length > 0 %}
+                <tfoot class="table-light">
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td class="text-center">{{ rekapData|reduce((carry, item) => carry + item.hakTahunan, 0) }}</td>
+                        <td class="text-center">{{ rekapData|reduce((carry, item) => carry + item.cutiTahunLalu, 0) }}</td>
+                        <td class="text-center">{{ rekapData|reduce((carry, item) => carry + item.cutiDuaTahunLalu, 0) }}</td>
+                        <td class="text-center">{{ rekapData|reduce((carry, item) => carry + item.dalamProses, 0) }}</td>
+                        <td class="text-center text-primary">
+                            {{ rekapData|reduce((carry, item) => carry + item.hakTahunan + item.cutiTahunLalu + item.cutiDuaTahunLalu, 0) }}
+                        </td>
+                        <td class="text-center">{{ rekapData|reduce((carry, item) => carry + item.terpakai, 0) }}</td>
+                        <td class="text-center text-success">
+                            {{ rekapData|reduce((carry, item) => carry + (item.hakTahunan + item.cutiTahunLalu + item.cutiDuaTahunLalu - item.terpakai - item.dalamProses), 0) }}
+                        </td>
+                        <td class="text-center">
+                            {% set totalHakAll = rekapData|reduce((carry, item) => carry + item.hakTahunan + item.cutiTahunLalu + item.cutiDuaTahunLalu, 0) %}
+                            {% set totalTerpakaiAll = rekapData|reduce((carry, item) => carry + item.terpakai, 0) %}
+                            {% set avgPersentase = totalHakAll > 0 ? (totalTerpakaiAll / totalHakAll * 100) : 0 %}
+                            {{ avgPersentase|round(1) }}%
+                        </td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-md-8">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Keterangan:</strong> 
+                    Hak = Hak cuti tahun berjalan, 
+                    Cuti Tahun Lalu (N-1) = Carry over dari {{ tahun - 1 }}, 
+                    Cuti Dua Tahun Lalu (N-2) = Carry over dari {{ tahun - 2 }}, 
+                    Dalam Proses = Pengajuan yang sedang menunggu persetujuan
+                </small>
+            </div>
+            <div class="col-md-4 text-end">
+                <small class="text-muted">
+                    <i class="bi bi-calendar"></i>
+                    Data per {{ 'now'|date('d F Y') }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function changeTahun(tahun) {
+    window.location.href = '{{ path('pengajuan_cuti_rekap') }}?tahun=' + tahun;
+}
+
+// Print styling
+window.addEventListener('beforeprint', function() {
+    document.body.classList.add('printing');
+});
+
+window.addEventListener('afterprint', function() {
+    document.body.classList.remove('printing');
+});
+</script>
+
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.progress {
+    height: 8px;
+    margin: 0 auto 2px;
+}
+
+/* Responsive table styling */
+@media (max-width: 768px) {
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+    
+    .avatar-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .badge.fs-6 {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Print styling */
+@media print {
+    .btn-toolbar, nav, .sidebar {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin: 0 !important;
+        padding: 10px !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+    
+    .table {
+        page-break-inside: auto;
+    }
+    
+    .table thead {
+        display: table-header-group;
+    }
+    
+    .table tbody tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    
+    .progress {
+        border: 1px solid #ccc;
+        background-color: #f8f9fa !important;
+    }
+    
+    .progress-bar {
+        background-color: #000 !important;
+    }
+    
+    .text-primary, .text-success, .text-warning, .text-danger, .text-info {
+        color: #000 !important;
+    }
+}
+
+.body.printing .table-responsive {
+    overflow: visible !important;
+}
+</style>
+{% endblock %}

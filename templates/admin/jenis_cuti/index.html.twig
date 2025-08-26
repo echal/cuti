@@ -1,0 +1,274 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jenis Cuti - Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Kelola Jenis Cuti</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_jenis_cuti_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Tambah Jenis Cuti
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Jenis</h6>
+                        <h3 class="mb-0">{{ jenis_cuti_list|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-list-ul fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Untuk PNS</h6>
+                        <h3 class="mb-0">{{ jenis_cuti_list|filter(j => j.tersediUntuk == 'PNS' or j.tersediUntuk == 'ALL')|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-check fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Untuk PPPK</h6>
+                        <h3 class="mb-0">{{ jenis_cuti_list|filter(j => j.tersediUntuk == 'PPPK' or j.tersediUntuk == 'ALL')|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-badge fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Pengajuan</h6>
+                        <h3 class="mb-0">{{ jenis_cuti_list|map(j => j.pengajuanCutis|length)|reduce((a, b) => a + b, 0) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-check fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-filter"></i> Filter Data
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Tersedia Untuk</label>
+                <select name="tersedi_untuk" class="form-select">
+                    <option value="">Semua Status</option>
+                    <option value="PNS" {{ app.request.get('tersedi_untuk') == 'PNS' ? 'selected' : '' }}>PNS</option>
+                    <option value="PPPK" {{ app.request.get('tersedi_untuk') == 'PPPK' ? 'selected' : '' }}>PPPK</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Durasi Max</label>
+                <select name="durasi" class="form-select">
+                    <option value="">Semua Durasi</option>
+                    <option value="terbatas" {{ app.request.get('durasi') == 'terbatas' ? 'selected' : '' }}>Terbatas</option>
+                    <option value="unlimited" {{ app.request.get('durasi') == 'unlimited' ? 'selected' : '' }}>Tidak Terbatas</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cari Kode/Nama</label>
+                <input type="text" name="search" class="form-control" 
+                       value="{{ app.request.get('search') }}" 
+                       placeholder="Masukkan kode atau nama jenis cuti...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Jenis Cuti Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i> Daftar Jenis Cuti
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if jenis_cuti_list|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>Kode</th>
+                            <th>Nama Jenis Cuti</th>
+                            <th>Maksimal Hari</th>
+                            <th>Tersedia Untuk</th>
+                            <th>Jumlah Pengajuan</th>
+                            <th width="150" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for jenis_cuti in jenis_cuti_list %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <strong class="text-primary">{{ jenis_cuti.kode }}</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ jenis_cuti.nama }}</strong>
+                                        {% if jenis_cuti.deskripsi %}
+                                            <br><small class="text-muted">{{ jenis_cuti.deskripsi|slice(0, 50) }}{% if jenis_cuti.deskripsi|length > 50 %}...{% endif %}</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if jenis_cuti.durasiMax %}
+                                        <span class="badge bg-info">{{ jenis_cuti.durasiMax }} hari</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Tidak terbatas</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {{ jenis_cuti.tersediUntuk == 'PNS' ? 'bg-success' : (jenis_cuti.tersediUntuk == 'PPPK' ? 'bg-primary' : 'bg-info') }}">
+                                        {{ jenis_cuti.tersediUntuk }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ jenis_cuti.pengajuanCutis|length }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('admin_jenis_cuti_show', {'id': jenis_cuti.id}) }}" 
+                                           class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_jenis_cuti_edit', {'id': jenis_cuti.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{ jenis_cuti.id }}"
+                                                title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ jenis_cuti.id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Yakin ingin menghapus jenis cuti <strong>{{ jenis_cuti.nama }}</strong> ({{ jenis_cuti.kode }})?</p>
+                                                    <div class="alert alert-warning">
+                                                        <i class="bi bi-exclamation-triangle"></i>
+                                                        <strong>Peringatan:</strong> Tindakan ini tidak dapat dibatalkan dan dapat mempengaruhi pengajuan cuti yang sudah ada.
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <form action="{{ path('admin_jenis_cuti_delete', {'id': jenis_cuti.id}) }}" method="post" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ jenis_cuti.id) }}">
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i> Ya, Hapus
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                <p class="text-muted mt-3">
+                    {% if app.request.query.count > 0 %}
+                        Tidak ada jenis cuti yang sesuai dengan filter yang dipilih.
+                    {% else %}
+                        Belum ada data jenis cuti yang tersimpan.
+                    {% endif %}
+                </p>
+                <a href="{{ path('admin_jenis_cuti_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Tambah Jenis Cuti Pertama
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if jenis_cuti_list|length > 0 %}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <small class="text-muted">
+                Menampilkan {{ jenis_cuti_list|length }} jenis cuti
+            </small>
+        </div>
+        <div class="col-md-6 text-end">
+            <small class="text-muted">Data terakhir diperbarui: {{ "now"|date("d/m/Y H:i") }}</small>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Enhanced search functionality
+document.querySelector('input[name="search"]').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        this.closest('form').submit();
+    }
+});
+
+// Tooltip initialization
+const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+{% endblock %}

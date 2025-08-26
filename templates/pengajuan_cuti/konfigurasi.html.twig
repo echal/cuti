@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Konfigurasi Sistem{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-gear"></i>
+        Konfigurasi Sistem
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('pengajuan_cuti_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-badge"></i>
+                    Data Kepala Kantor/Kakanwil
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token('konfigurasi') }}">
+                    
+                    <div class="mb-3">
+                        <label for="kepala_kantor_nama" class="form-label">Nama Kepala Kantor <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="kepala_kantor_nama" 
+                               name="kepala_kantor_nama" value="{{ kepala_kantor.nama }}" 
+                               placeholder="Masukkan nama lengkap Kepala Kantor" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="kepala_kantor_nip" class="form-label">NIP Kepala Kantor <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="kepala_kantor_nip" 
+                               name="kepala_kantor_nip" value="{{ kepala_kantor.nip }}" 
+                               placeholder="18 digit NIP" pattern="[0-9]{18}" maxlength="18" required>
+                        <div class="form-text">Format: 18 digit angka</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="kepala_kantor_jabatan" class="form-label">Jabatan</label>
+                        <input type="text" class="form-control" id="kepala_kantor_jabatan" 
+                               name="kepala_kantor_jabatan" value="{{ kepala_kantor.jabatan }}" 
+                               placeholder="Kepala Kanwil Kemenag Sulbar">
+                        <div class="form-text">Opsional, jika kosong akan menggunakan default</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Simpan Konfigurasi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Informasi
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6>Data Kepala Kantor</h6>
+                <p class="small text-muted">
+                    Data ini akan digunakan pada surat cuti resmi sebagai pejabat 
+                    berwenang yang menandatangani dan menyetujui pengajuan cuti.
+                </p>
+                
+                <h6 class="mt-3">Penggunaan</h6>
+                <ul class="small text-muted">
+                    <li>Bagian VIII pada surat cuti (Keputusan Pejabat Berwenang)</li>
+                    <li>Tanda tangan digital pada dokumen PDF</li>
+                    <li>Otomatis ditampilkan untuk semua cuti yang disetujui</li>
+                </ul>
+                
+                <div class="alert alert-warning mt-3" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <small>Pastikan data benar sebelum menyimpan. Data ini akan muncul di semua surat cuti resmi.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+@media print {
+    .btn-toolbar, nav, .sidebar {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+</style>
+{% endblock %}

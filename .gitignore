@@ -1,0 +1,74 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###
+
+# Node modules
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env.test
+.env.prod.local
+.env.dev.local
+
+# Log files
+*.log
+/logs/
+
+# Cache and temporary files
+.cache/
+*.tmp
+*.temp
+*~
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Application specific
+/public/uploads/
+/public/build/
+/assets/build/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Test files (not part of the actual project)
+test_*.php
+debug_*.php

@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - Aplikasi Cuti{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-calendar-check"></i>
+                        Login Aplikasi Cuti
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% if app.user %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                Anda sudah login sebagai {{ app.user.userIdentifier }}.
+                                <a href="{{ path('pengajuan_cuti_index') }}">Lanjutkan ke Dashboard</a>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="bi bi-person"></i> NIP
+                            </label>
+                            <input type="text" 
+                                   value="{{ last_username }}" 
+                                   name="_username" 
+                                   id="username" 
+                                   class="form-control form-control-lg"
+                                   autocomplete="username" 
+                                   placeholder="Masukkan NIP Anda"
+                                   required 
+                                   autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-key"></i> Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       name="_password" 
+                                       id="password" 
+                                       class="form-control form-control-lg"
+                                       autocomplete="current-password" 
+                                       placeholder="Masukkan Password"
+                                       required>
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword">
+                                    <i class="bi bi-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">
+                                Password default adalah NIP Anda
+                            </small>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" 
+                                   name="_remember_me" 
+                                   class="form-check-input" 
+                                   id="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Ingat saya selama 1 minggu
+                            </label>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" type="submit">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Login
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="bi bi-building"></i>
+                        Kanwil Kemenag Sulawesi Barat
+                    </small>
+                </div>
+            </div>
+
+            {# Info Box #}
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-light text-info">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        Informasi Login
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <small>Gunakan NIP 18 digit sebagai username</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <small>Password default adalah NIP Anda</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <small>Hubungi admin jika lupa password</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle password visibility
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const password = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (password.type === 'password') {
+        password.type = 'text';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+    } else {
+        password.type = 'password';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+    }
+});
+
+// Focus on username field
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('username').focus();
+});
+</script>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.card-header {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+}
+
+.form-control-lg {
+    padding: 0.75rem 1rem;
+}
+
+.input-group .btn {
+    border-left: 0;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+{% endblock %}

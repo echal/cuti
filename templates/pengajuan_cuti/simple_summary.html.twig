@@ -1,0 +1,315 @@
+{# Template untuk Tabel Sederhana & Responsif - Summary Cuti Pegawai #}
+
+{# Summary Cards - Tampilan Desktop #}
+<div class="row mb-4 d-none d-md-flex">
+    <div class="col-md-2">
+        <div class="card text-center border-primary">
+            <div class="card-body py-2">
+                <h6 class="card-title text-primary mb-1">Hak {{ tahun }}</h6>
+                <h4 class="text-primary mb-0">{{ hakTahunan }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-warning">
+            <div class="card-body py-2">
+                <h6 class="card-title text-warning mb-1">Cuti Tahun Lalu<br><small>(N-1)</small></h6>
+                <h4 class="text-warning mb-0">{{ cutiTahunLalu }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-info">
+            <div class="card-body py-2">
+                <h6 class="card-title text-info mb-1">Cuti Dua Tahun Lalu<br><small>(N-2)</small></h6>
+                <h4 class="text-info mb-0">{{ cutiDuaTahunLalu }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-secondary">
+            <div class="card-body py-2">
+                <h6 class="card-title text-secondary mb-1">Total Hak</h6>
+                <h4 class="text-secondary mb-0">{{ hakTahunan + cutiTahunLalu + cutiDuaTahunLalu }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-danger">
+            <div class="card-body py-2">
+                <h6 class="card-title text-danger mb-1">Terpakai</h6>
+                <h4 class="text-danger mb-0">{{ terpakai }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-success">
+            <div class="card-body py-2">
+                <h6 class="card-title text-success mb-1">Sisa</h6>
+                <h4 class="text-success mb-0">{{ sisa }} <small class="text-muted fs-6">hari</small></h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Summary Table - Tampilan Mobile #}
+<div class="card d-md-none mb-4">
+    <div class="card-header">
+        <h6 class="mb-0">Ringkasan Cuti {{ tahun }}</h6>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+            <tbody>
+                <tr>
+                    <td class="fw-bold text-primary">Hak {{ tahun }}</td>
+                    <td class="text-end">
+                        <span class="badge bg-primary">{{ hakTahunan }} hari</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-warning">Cuti Tahun Lalu (N-1)</td>
+                    <td class="text-end">
+                        <span class="badge bg-warning">{{ cutiTahunLalu }} hari</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-info">Cuti Dua Tahun Lalu (N-2)</td>
+                    <td class="text-end">
+                        <span class="badge bg-info">{{ cutiDuaTahunLalu }} hari</span>
+                    </td>
+                </tr>
+                <tr class="table-secondary">
+                    <td class="fw-bold">Total Hak</td>
+                    <td class="text-end">
+                        <span class="badge bg-secondary">{{ hakTahunan + cutiTahunLalu + cutiDuaTahunLalu }} hari</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-danger">Terpakai</td>
+                    <td class="text-end">
+                        <span class="badge bg-danger">{{ terpakai }} hari</span>
+                    </td>
+                </tr>
+                <tr class="table-success">
+                    <td class="fw-bold text-success">Sisa</td>
+                    <td class="text-end">
+                        <span class="badge bg-success fs-6">{{ sisa }} hari</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Tabel Lengkap Rekap Cuti #}
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">
+                    <i class="bi bi-table"></i>
+                    Rekap Lengkap Cuti {{ tahun }}
+                </h5>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Cetak
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center">Keterangan</th>
+                        <th class="text-center">Jumlah (Hari)</th>
+                        <th class="text-center">Persentase</th>
+                        <th class="text-center">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <i class="bi bi-calendar-check text-primary"></i>
+                            <strong>Hak Cuti {{ tahun }}</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary fs-6">{{ hakTahunan }}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-primary" 
+                                     style="width: {{ (hakTahunan / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu) * 100)|round }}%">
+                                </div>
+                            </div>
+                            {{ (hakTahunan / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu) * 100)|round }}%
+                        </td>
+                        <td>
+                            <small class="text-muted">Hak cuti tahunan sesuai peraturan</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="bi bi-arrow-clockwise text-warning"></i>
+                            <strong>Cuti Tahun Lalu (N-1)</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-warning fs-6">{{ cutiTahunLalu }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% set persentaseN1 = (cutiTahunLalu / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu) * 100)|round %}
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-warning" style="width: {{ persentaseN1 }}%"></div>
+                            </div>
+                            {{ persentaseN1 }}%
+                        </td>
+                        <td>
+                            <small class="text-muted">Carry over dari tahun {{ tahun - 1 }}</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="bi bi-arrow-repeat text-info"></i>
+                            <strong>Cuti Dua Tahun Lalu (N-2)</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info fs-6">{{ cutiDuaTahunLalu }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% set persentaseN2 = (cutiDuaTahunLalu / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu) * 100)|round %}
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-info" style="width: {{ persentaseN2 }}%"></div>
+                            </div>
+                            {{ persentaseN2 }}%
+                        </td>
+                        <td>
+                            <small class="text-muted">Carry over dari tahun {{ tahun - 2 }}</small>
+                        </td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td>
+                            <i class="bi bi-calculator"></i>
+                            <strong>Total Hak</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary fs-5">{{ hakTahunan + cutiTahunLalu + cutiDuaTahunLalu }}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-secondary" style="width: 100%"></div>
+                            </div>
+                            100%
+                        </td>
+                        <td>
+                            <small class="text-muted">Total hak cuti yang dapat digunakan</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="bi bi-check-circle text-danger"></i>
+                            <strong>Terpakai</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-danger fs-6">{{ terpakai }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% set persentaseTerpakai = ((terpakai / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu)) * 100)|round %}
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-danger" style="width: {{ persentaseTerpakai }}%"></div>
+                            </div>
+                            {{ persentaseTerpakai }}%
+                        </td>
+                        <td>
+                            <small class="text-muted">Cuti yang sudah digunakan</small>
+                        </td>
+                    </tr>
+                    <tr class="table-success">
+                        <td>
+                            <i class="bi bi-hourglass-split text-success"></i>
+                            <strong>Sisa</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success fs-5">{{ sisa }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% set persentaseSisa = ((sisa / (hakTahunan + cutiTahunLalu + cutiDuaTahunLalu)) * 100)|round %}
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar bg-success" style="width: {{ persentaseSisa }}%"></div>
+                            </div>
+                            {{ persentaseSisa }}%
+                        </td>
+                        <td>
+                            <small class="text-muted">Cuti yang masih dapat digunakan</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-md-8">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Catatan:</strong> 
+                    N-1 = Cuti tahun lalu yang dibawa, N-2 = Cuti dua tahun lalu yang dibawa. 
+                    Maksimal carry over per tahun adalah 6 hari.
+                </small>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <small class="text-muted">
+                    <i class="bi bi-calendar"></i>
+                    Data per {{ 'now'|date('d F Y, H:i') }} WIB
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+    
+    .progress {
+        width: 60px !important;
+        height: 6px;
+    }
+    
+    .badge.fs-6 {
+        font-size: 0.75rem !important;
+    }
+    
+    .badge.fs-5 {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn, .card-header .col-auto {
+        display: none !important;
+    }
+    
+    .table {
+        page-break-inside: auto;
+    }
+    
+    .table tbody tr {
+        page-break-inside: avoid;
+    }
+    
+    .progress {
+        border: 1px solid #000;
+        background-color: #f8f9fa !important;
+    }
+    
+    .progress-bar {
+        background-color: #000 !important;
+    }
+}
+</style>

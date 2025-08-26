@@ -1,0 +1,309 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ pejabat.nama }} - Detail Pejabat{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Detail Pejabat</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_pejabat_edit', {'id': pejabat.id}) }}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            {% set total_pengajuan = pejabat.pengajuanCutisPenyetuju|length + pejabat.pengajuanCutisAtasan|length %}
+            {% if total_pengajuan == 0 %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash"></i> Hapus
+            </button>
+            {% endif %}
+        </div>
+        <a href="{{ path('admin_pejabat_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<!-- Pejabat Details -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Informasi Pejabat
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Nama Lengkap</h6>
+                        <p class="h4 text-primary mb-3">{{ pejabat.nama }}</p>
+                        
+                        <h6 class="text-muted">NIP</h6>
+                        <p class="mb-3">
+                            {% if pejabat.nip %}
+                                <code class="fs-6">{{ pejabat.nip }}</code>
+                            {% else %}
+                                <span class="text-muted">Tidak ada</span>
+                            {% endif %}
+                        </p>
+                        
+                        <h6 class="text-muted">Jabatan</h6>
+                        <p class="h5 mb-3">{{ pejabat.jabatan }}</p>
+                        
+                        <h6 class="text-muted">Unit Kerja</h6>
+                        <p class="mb-3">
+                            {% if pejabat.unitKerja %}
+                                <span class="badge bg-info fs-6">{{ pejabat.unitKerja.nama }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">Pejabat Struktural</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Status</h6>
+                        <p class="mb-3">
+                            <span class="badge {{ pejabat.status == 'aktif' ? 'bg-success' : 'bg-danger' }} fs-6">
+                                {{ pejabat.status|title }}
+                            </span>
+                        </p>
+                        
+                        <h6 class="text-muted">Mulai Menjabat</h6>
+                        <p class="mb-3">{{ pejabat.mulaiMenjabat|date('d F Y') }}</p>
+                        
+                        <h6 class="text-muted">Selesai Menjabat</h6>
+                        <p class="mb-3">
+                            {% if pejabat.selesaiMenjabat %}
+                                {{ pejabat.selesaiMenjabat|date('d F Y') }}
+                                {% if pejabat.selesaiMenjabat < date() %}
+                                    <span class="badge bg-warning ms-2">Sudah Berakhir</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-success">Masih Aktif</span>
+                            {% endif %}
+                        </p>
+                        
+                        <h6 class="text-muted">Masa Jabatan</h6>
+                        <p class="mb-3">
+                            {% if pejabat.selesaiMenjabat %}
+                                {% set diff = pejabat.mulaiMenjabat.diff(pejabat.selesaiMenjabat) %}
+                                {{ diff.y }} tahun {{ diff.m }} bulan
+                            {% else %}
+                                {% set diff = pejabat.mulaiMenjabat.diff(date()) %}
+                                {{ diff.y }} tahun {{ diff.m }} bulan <small class="text-muted">(hingga sekarang)</small>
+                            {% endif %}
+                        </p>
+                        
+                        <h6 class="text-muted">Tanggal Dibuat</h6>
+                        <p class="mb-3">{{ pejabat.createdAt|date('d/m/Y H:i') }}</p>
+                        
+                        <h6 class="text-muted">Terakhir Diperbarui</h6>
+                        <p class="mb-0">{{ pejabat.updatedAt|date('d/m/Y H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Statistics Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Statistik Pengajuan
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-primary">{{ total_pengajuan }}</h2>
+                    <p class="text-muted">Total Pengajuan Terkait</p>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="p-2 bg-success bg-opacity-10 rounded">
+                            <h5 class="text-success mb-1">{{ pejabat.pengajuanCutisPenyetuju|length }}</h5>
+                            <small class="text-muted">Sebagai Penyetuju</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-info bg-opacity-10 rounded">
+                            <h5 class="text-info mb-1">{{ pejabat.pengajuanCutisAtasan|length }}</h5>
+                            <small class="text-muted">Sebagai Atasan</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Status Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Status Jabatan
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-{{ pejabat.status == 'aktif' ? 'check-circle text-success' : 'x-circle text-danger' }} me-2"></i>
+                        <small>Status: <strong>{{ pejabat.status|title }}</strong></small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-{{ pejabat.isMasihMenjabat ? 'calendar-check text-success' : 'calendar-x text-warning' }} me-2"></i>
+                        <small>
+                            {% if pejabat.isMasihMenjabat %}
+                                Masih menjabat
+                            {% else %}
+                                Sudah selesai menjabat
+                            {% endif %}
+                        </small>
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-building{{ pejabat.unitKerja ? '' : '-slash' }} text-{{ pejabat.unitKerja ? 'info' : 'secondary' }} me-2"></i>
+                        <small>
+                            {% if pejabat.unitKerja %}
+                                Terikat unit kerja
+                            {% else %}
+                                Pejabat struktural
+                            {% endif %}
+                        </small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-gear"></i> Tindakan
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('admin_pejabat_edit', {'id': pejabat.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Edit Pejabat
+                    </a>
+                    {% if total_pengajuan == 0 %}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Hapus Pejabat
+                    </button>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <small>Pejabat tidak dapat dihapus karena terkait dengan {{ total_pengajuan }} pengajuan cuti.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Pengajuan -->
+{% if total_pengajuan > 0 %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="bi bi-clock-history"></i> Pengajuan Cuti Terkait (10 Terbaru)
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Pemohon</th>
+                        <th>Jenis Cuti</th>
+                        <th>Status</th>
+                        <th>Peran</th>
+                        <th width="80">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set all_pengajuan = pejabat.pengajuanCutisPenyetuju|merge(pejabat.pengajuanCutisAtasan) %}
+                    {% for pengajuan in all_pengajuan|slice(0, 10) %}
+                    <tr>
+                        <td>
+                            <small>{{ pengajuan.tanggalPengajuan|date('d/m/Y') }}</small>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ pengajuan.user.nama }}</strong>
+                                <br><small class="text-muted">{{ pengajuan.user.nip ?: 'No NIP' }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ pengajuan.jenisCuti.kode }}</span>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if pengajuan.status == 'disetujui' %}bg-success
+                                {% elseif pengajuan.status == 'diajukan' %}bg-warning
+                                {% elseif pengajuan.status == 'ditolak' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ pengajuan.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if pengajuan.pejabatPenyetuju == pejabat %}
+                                <span class="badge bg-success">Penyetuju</span>
+                            {% endif %}
+                            {% if pengajuan.pejabatAtasan == pejabat %}
+                                <span class="badge bg-info">Atasan</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('pengajuan_cuti_show', {'id': pengajuan.id}) }}" 
+                               class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if total_pengajuan > 10 %}
+        <div class="card-footer text-center">
+            <small class="text-muted">
+                Dan {{ total_pengajuan - 10 }} pengajuan lainnya...
+            </small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Delete Confirmation Modal -->
+{% if total_pengajuan == 0 %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Yakin ingin menghapus pejabat <strong>{{ pejabat.nama }}</strong> ({{ pejabat.jabatan }})?</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    Pejabat ini tidak memiliki pengajuan cuti terkait dan aman untuk dihapus.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ path('admin_pejabat_delete', {'id': pejabat.id}) }}" method="post" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ pejabat.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

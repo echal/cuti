@@ -1,0 +1,289 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pejabat - Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Kelola Pejabat</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_pejabat_new') }}" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Tambah Pejabat
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Pejabat</h6>
+                        <h3 class="mb-0">{{ pejabats|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-badge fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Aktif</h6>
+                        <h3 class="mb-0">{{ pejabats|filter(p => p.status == 'aktif')|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Non-aktif</h6>
+                        <h3 class="mb-0">{{ pejabats|filter(p => p.status == 'nonaktif')|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-x-circle fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Masih Menjabat</h6>
+                        <h3 class="mb-0">{{ pejabats|filter(p => p.isMasihMenjabat)|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-check fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-filter"></i> Filter Data
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">Semua Status</option>
+                    <option value="aktif" {{ status == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                    <option value="nonaktif" {{ status == 'nonaktif' ? 'selected' : '' }}>Non-aktif</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Unit Kerja</label>
+                <select name="unit_kerja" class="form-select">
+                    <option value="">Semua Unit</option>
+                    {% for unit in units %}
+                        <option value="{{ unit.id }}" {{ unit_kerja_id == (unit.id ~ '') ? 'selected' : '' }}>
+                            {{ unit.nama }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cari Nama/NIP/Jabatan</label>
+                <input type="text" name="search" class="form-control" 
+                       value="{{ search }}" 
+                       placeholder="Masukkan nama, NIP, atau jabatan...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Pejabat Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i> Daftar Pejabat
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if pejabats|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>Nama</th>
+                            <th>NIP</th>
+                            <th>Jabatan</th>
+                            <th>Unit Kerja</th>
+                            <th>Status</th>
+                            <th>Periode</th>
+                            <th width="150" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pejabat in pejabats %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <strong>{{ pejabat.nama }}</strong>
+                                </td>
+                                <td>
+                                    {% if pejabat.nip %}
+                                        <code>{{ pejabat.nip }}</code>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ pejabat.jabatan }}</td>
+                                <td>
+                                    {% if pejabat.unitKerja %}
+                                        <span class="badge bg-info">{{ pejabat.unitKerja.nama }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Struktural</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {{ pejabat.status == 'aktif' ? 'bg-success' : 'bg-danger' }}">
+                                        {{ pejabat.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>
+                                        {{ pejabat.mulaiMenjabat|date('d/m/Y') }} -
+                                        {% if pejabat.selesaiMenjabat %}
+                                            {{ pejabat.selesaiMenjabat|date('d/m/Y') }}
+                                        {% else %}
+                                            <span class="text-success">Sekarang</span>
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('admin_pejabat_show', {'id': pejabat.id}) }}" 
+                                           class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_pejabat_edit', {'id': pejabat.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{ pejabat.id }}"
+                                                title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ pejabat.id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Yakin ingin menghapus pejabat <strong>{{ pejabat.nama }}</strong> ({{ pejabat.jabatan }})?</p>
+                                                    {% set total_pengajuan = pejabat.pengajuanCutisPenyetuju|length + pejabat.pengajuanCutisAtasan|length %}
+                                                    {% if total_pengajuan > 0 %}
+                                                    <div class="alert alert-warning">
+                                                        <i class="bi bi-exclamation-triangle"></i>
+                                                        <strong>Peringatan:</strong> Pejabat ini terkait dengan {{ total_pengajuan }} pengajuan cuti. Penghapusan tidak diizinkan.
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="alert alert-info">
+                                                        <i class="bi bi-info-circle"></i>
+                                                        Pejabat ini tidak memiliki pengajuan cuti terkait dan aman untuk dihapus.
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    {% if total_pengajuan == 0 %}
+                                                    <form action="{{ path('admin_pejabat_delete', {'id': pejabat.id}) }}" method="post" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ pejabat.id) }}">
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i> Ya, Hapus
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-person-x fs-1 text-muted"></i>
+                <p class="text-muted mt-3">
+                    {% if search or unit_kerja_id or status %}
+                        Tidak ada pejabat yang sesuai dengan filter yang dipilih.
+                    {% else %}
+                        Belum ada data pejabat yang tersimpan.
+                    {% endif %}
+                </p>
+                <a href="{{ path('admin_pejabat_new') }}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Tambah Pejabat Pertama
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if pejabats|length > 0 %}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <small class="text-muted">
+                Menampilkan {{ pejabats|length }} pejabat
+            </small>
+        </div>
+        <div class="col-md-6 text-end">
+            <small class="text-muted">Data terakhir diperbarui: {{ "now"|date("d/m/Y H:i") }}</small>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Enhanced search functionality
+document.querySelector('input[name="search"]').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        this.closest('form').submit();
+    }
+});
+</script>
+{% endblock %}

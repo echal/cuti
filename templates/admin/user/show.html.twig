@@ -1,0 +1,439 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detail User - {{ user.nama }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Detail User</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash"></i> Hapus
+            </button>
+        </div>
+        <a href="{{ path('admin_user_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Basic Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person"></i> Informasi Dasar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">{{ user.identifierType }}</dt>
+                            <dd class="col-sm-8">
+                                {% if user.nip %}
+                                    <span class="badge bg-primary">{{ user.nip }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Nama Lengkap</dt>
+                            <dd class="col-sm-8">{{ user.nama }}</dd>
+                            
+                            <dt class="col-sm-4">Email</dt>
+                            <dd class="col-sm-8">
+                                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Jenis Kelamin</dt>
+                            <dd class="col-sm-8">
+                                {% if user.jenisKelamin == 'L' %}
+                                    <i class="bi bi-person-fill text-primary"></i> Laki-laki
+                                {% else %}
+                                    <i class="bi bi-person-fill text-danger"></i> Perempuan
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Telepon</dt>
+                            <dd class="col-sm-8">
+                                {% if user.telp %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="tel:{{ user.telp }}" class="text-decoration-none">
+                                            <i class="bi bi-telephone text-primary"></i> {{ user.telp }}
+                                        </a>
+                                        <a href="https://wa.me/{{ user.telp|replace({'+': '', '-': '', ' ': ''}) }}" 
+                                           target="_blank" 
+                                           class="btn btn-success btn-sm" 
+                                           title="Chat di WhatsApp">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Jumlah Anak</dt>
+                            <dd class="col-sm-8">{{ user.jumlahAnak }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-building"></i> Informasi Kepegawaian
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Status Kepegawaian</dt>
+                            <dd class="col-sm-7">
+                                {% if user.statusKepegawaian == 'PNS' %}
+                                    <span class="badge bg-success">{{ user.statusKepegawaian }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ user.statusKepegawaian }}</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-5">Status Pegawai</dt>
+                            <dd class="col-sm-7">
+                                {% if user.statusPegawai == 'aktif' %}
+                                    <span class="badge bg-success">Aktif</span>
+                                {% elseif user.statusPegawai == 'CLTN' %}
+                                    <span class="badge bg-warning">CLTN</span>
+                                {% elseif user.statusPegawai == 'pensiun' %}
+                                    <span class="badge bg-secondary">Pensiun</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ user.statusPegawai|title }}</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-5">Jabatan</dt>
+                            <dd class="col-sm-7">{{ user.jabatan }}</dd>
+                            
+                            <dt class="col-sm-5">Golongan</dt>
+                            <dd class="col-sm-7">
+                                {% if user.golongan %}
+                                    <span class="badge bg-secondary">{{ user.golongan }}</span>
+                                {% else %}
+                                    <span class="text-muted">Belum diset</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Unit Kerja</dt>
+                            <dd class="col-sm-8">
+                                <strong>{{ user.unitKerja.kode }}</strong><br>
+                                <small class="text-muted">{{ user.unitKerja.nama }}</small>
+                            </dd>
+                            
+                            <dt class="col-sm-4">Golongan</dt>
+                            <dd class="col-sm-8">{{ user.golongan }}</dd>
+                            
+                            <dt class="col-sm-4">Masa Kerja</dt>
+                            <dd class="col-sm-8">
+                                {% if user.masaKerja %}
+                                    {{ user.masaKerja }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.statusKepegawaian == 'PNS' %}
+        <!-- Service Dates (PNS only) -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar"></i> Tanggal Kepegawaian
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">TMT CPNS</dt>
+                            <dd class="col-sm-7">
+                                {% if user.tmtCpns %}
+                                    {{ user.tmtCpns|date('d/m/Y') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">TMT PNS</dt>
+                            <dd class="col-sm-7">
+                                {% if user.tmtPns %}
+                                    {{ user.tmtPns|date('d/m/Y') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Related Data -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-database"></i> Data Terkait
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ user.hakCutis|length }}</h4>
+                        <small class="text-muted">Hak Cuti</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">{{ user.pengajuanCutis|length }}</h4>
+                        <small class="text-muted">Pengajuan Cuti</small>
+                    </div>
+                </div>
+                
+                {% if user.pengajuanCutis|length > 0 %}
+                <hr>
+                <h6>Status Pengajuan:</h6>
+                <div class="row small">
+                    {% set statusCounts = {'draft': 0, 'diajukan': 0, 'disetujui': 0, 'ditolak': 0, 'dibatalkan': 0} %}
+                    {% for pengajuan in user.pengajuanCutis %}
+                        {% set statusCounts = statusCounts|merge({(pengajuan.status): statusCounts[pengajuan.status] + 1}) %}
+                    {% endfor %}
+                    
+                    {% for status, count in statusCounts %}
+                        {% if count > 0 %}
+                        <div class="col-6 mb-1">
+                            <span class="badge 
+                                {% if status == 'draft' %}bg-secondary
+                                {% elseif status == 'diajukan' %}bg-warning
+                                {% elseif status == 'disetujui' %}bg-success
+                                {% elseif status == 'ditolak' %}bg-danger
+                                {% elseif status == 'dibatalkan' %}bg-dark
+                                {% endif %}">
+                                {{ count }}
+                            </span>
+                            {{ status|title }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ path('pengajuan_cuti_index') }}?user_id={{ user.id }}" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-list"></i> Lihat Pengajuan Cuti
+                    </a>
+                    <a href="{{ path('laporan_index') }}?user_id={{ user.id }}" 
+                       class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-bar-chart"></i> Lihat Laporan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Role Management -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Role & Akses
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Role Saat Ini</label>
+                    <div>
+                        {% for role in user.roles %}
+                            {% if role == 'ROLE_ADMIN' %}
+                                <span class="badge bg-danger me-1">Admin</span>
+                            {% elseif role == 'ROLE_APPROVER' %}
+                                <span class="badge bg-warning me-1">Approver</span>
+                            {% elseif role == 'ROLE_USER' %}
+                                <span class="badge bg-primary me-1">User</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                {% if user != app.user %}
+                <form method="post" action="{{ path('admin_user_change_role', {'id': user.id}) }}">
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Ubah Role</label>
+                        <select name="role" id="role" class="form-select form-select-sm">
+                            <option value="ROLE_USER" {{ 'ROLE_ADMIN' not in user.roles and 'ROLE_APPROVER' not in user.roles ? 'selected' : '' }}>User</option>
+                            <option value="ROLE_APPROVER" {{ 'ROLE_APPROVER' in user.roles ? 'selected' : '' }}>Approver</option>
+                            <option value="ROLE_ADMIN" {{ 'ROLE_ADMIN' in user.roles ? 'selected' : '' }}>Admin</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="_token" value="{{ csrf_token('change_role_' ~ user.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-repeat"></i> Ubah Role
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Password Management -->
+        {% if user != app.user %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-key"></i> Manajemen Password
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <small class="text-muted">Reset password ke NIP default</small>
+                </p>
+                <form method="post" action="{{ path('admin_user_reset_password', {'id': user.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reset_password_' ~ user.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-warning" 
+                            onclick="return confirm('Yakin ingin reset password {{ user.nama }} ke NIP default?')">
+                        <i class="bi bi-arrow-clockwise"></i> Reset Password
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- System Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Informasi Sistem
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Dibuat</dt>
+                    <dd class="col-sm-6">
+                        <small class="text-muted">{{ user.createdAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Terakhir Update</dt>
+                    <dd class="col-sm-6">
+                        <small class="text-muted">{{ user.updatedAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Statistik
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-8">Total Pengajuan Cuti</dt>
+                    <dd class="col-sm-4">
+                        <span class="badge bg-info">{{ user.pengajuanCutis|length }}</span>
+                    </dd>
+                    
+                    <dt class="col-sm-8">Hak Cuti Tersedia</dt>
+                    <dd class="col-sm-4">
+                        <span class="badge bg-success">{{ user.hakCutis|length }}</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Yakin ingin menghapus user <strong>{{ user.nama }}</strong>?</p>
+                {% if user.nip %}
+                <p>NIP: <strong>{{ user.nip }}</strong></p>
+                {% endif %}
+                
+                <!-- Data Information -->
+                <div class="mt-3">
+                    <h6>Data yang akan dihapus:</h6>
+                    <ul class="small">
+                        <li><strong>Data Hak Cuti:</strong> {{ user.hakCutis|length }} record</li>
+                        <li><strong>Pengajuan Cuti:</strong> {{ user.pengajuanCutis|length }} record</li>
+                    </ul>
+                </div>
+                
+                {% set activePengajuan = user.pengajuanCutis|filter(p => p.status in ['diajukan', 'disetujui']) %}
+                {% if activePengajuan|length > 0 %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle"></i>
+                    <strong>Tidak dapat menghapus!</strong><br>
+                    User memiliki {{ activePengajuan|length }} pengajuan cuti aktif (diajukan/disetujui). 
+                    Proses pengajuan tersebut terlebih dahulu.
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Peringatan:</strong> 
+                    <ul class="mb-0 mt-2">
+                        <li>Data yang sudah dihapus tidak dapat dikembalikan</li>
+                        <li>Semua data hak cuti akan ikut terhapus</li>
+                        <li>Pengajuan cuti yang sudah selesai akan ikut terhapus</li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                {% set activePengajuan = user.pengajuanCutis|filter(p => p.status in ['diajukan', 'disetujui']) %}
+                {% if activePengajuan|length > 0 %}
+                    <button type="button" class="btn btn-danger" disabled>
+                        <i class="bi bi-trash"></i> Tidak Dapat Dihapus
+                    </button>
+                {% else %}
+                    <form method="post" action="{{ path('admin_user_delete', {'id': user.id}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ user.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

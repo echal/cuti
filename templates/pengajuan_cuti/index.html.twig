@@ -1,0 +1,521 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pengajuan Cuti{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-calendar-check"></i>
+        {% if is_granted('ROLE_APPROVER') and not is_granted('ROLE_ADMIN') %}
+            Persetujuan Cuti
+        {% else %}
+            Pengajuan Cuti
+        {% endif %}
+    </h1>
+    
+    {% if not is_granted('ROLE_APPROVER') or is_granted('ROLE_ADMIN') %}
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{{ path('pengajuan_cuti_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Ajukan Cuti Baru
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{# Info Summary untuk User #}
+{% if not is_granted('ROLE_APPROVER') or is_granted('ROLE_ADMIN') %}
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h6 class="card-title text-primary">Hak {{ 'now'|date('Y') }}</h6>
+                <h3 class="text-primary">{{ summary.hak_tahunan ?? 12 }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h6 class="card-title text-warning">Cuti Tahun Lalu (N-1)</h6>
+                <h3 class="text-warning">{{ summary.cuti_tahun_lalu ?? 0 }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h6 class="card-title text-info">Cuti Dua Tahun Lalu (N-2)</h6>
+                <h3 class="text-info">{{ summary.cuti_dua_tahun_lalu ?? 0 }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-secondary">
+            <div class="card-body">
+                <h6 class="card-title text-secondary">Total Hak</h6>
+                <h3 class="text-secondary">{{ (summary.hak_tahunan ?? 12) + (summary.cuti_tahun_lalu ?? 0) + (summary.cuti_dua_tahun_lalu ?? 0) }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h6 class="card-title text-danger">Terpakai</h6>
+                <h3 class="text-danger">{{ summary.terpakai ?? 0 }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h6 class="card-title text-success">Sisa</h6>
+                <h3 class="text-success">{{ summary.sisa ?? 0 }} <small class="text-muted">hari</small></h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Tabs untuk Approver #}
+{% if is_granted('ROLE_APPROVER') %}
+<ul class="nav nav-tabs mb-3" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button">
+            <i class="bi bi-clock"></i> Menunggu Persetujuan 
+            <span class="badge bg-warning ms-1">{{ pengajuan_list|filter(p => p.status == 'diajukan')|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="processed-tab" data-bs-toggle="tab" data-bs-target="#processed" type="button">
+            <i class="bi bi-check-all"></i> Sudah Diproses
+        </button>
+    </li>
+    {% if is_granted('ROLE_ADMIN') %}
+    <li class="nav-item">
+        <button class="nav-link" id="my-requests-tab" data-bs-toggle="tab" data-bs-target="#my-requests" type="button">
+            <i class="bi bi-person"></i> Pengajuan Saya
+        </button>
+    </li>
+    {% endif %}
+</ul>
+
+<div class="tab-content">
+    {# Tab: Menunggu Persetujuan #}
+    <div class="tab-pane fade show active" id="pending" role="tabpanel">
+        {% set pending_requests = pengajuan_list|filter(p => p.status == 'diajukan') %}
+        {% if pending_requests|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-person"></i> Nama</th>
+                            <th><i class="bi bi-building"></i> Unit</th>
+                            <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                            <th><i class="bi bi-calendar"></i> Tanggal</th>
+                            <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                            <th><i class="bi bi-calendar-event"></i> Diajukan</th>
+                            <th><i class="bi bi-tools"></i> Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pengajuan in pending_requests %}
+                        <tr>
+                            <td>
+                                <strong>{{ pengajuan.user.nama }}</strong><br>
+                                <small class="text-muted">{{ pengajuan.user.nip }}</small>
+                            </td>
+                            <td>{{ pengajuan.user.unitKerja.nama }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                            </td>
+                            <td>
+                                {{ pengajuan.tanggalMulai|date('d/m/Y') }} - {{ pengajuan.tanggalSelesai|date('d/m/Y') }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                            </td>
+                            <td>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Tidak ada pengajuan yang menunggu persetujuan.
+            </div>
+        {% endif %}
+    </div>
+
+    {# Tab: Sudah Diproses #}
+    <div class="tab-pane fade" id="processed" role="tabpanel">
+        {% set processed_requests = processed_list is defined and processed_list ? processed_list : pengajuan_list|filter(p => p.status in ['disetujui', 'ditolak']) %}
+        {% if processed_requests|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-person"></i> Nama</th>
+                            <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                            <th><i class="bi bi-calendar"></i> Tanggal</th>
+                            <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                            <th><i class="bi bi-flag"></i> Status</th>
+                            <th><i class="bi bi-calendar-check"></i> Diproses</th>
+                            <th><i class="bi bi-tools"></i> Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pengajuan in processed_requests %}
+                        <tr>
+                            <td>
+                                <strong>{{ pengajuan.user.nama }}</strong><br>
+                                <small class="text-muted">{{ pengajuan.user.nip }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                            </td>
+                            <td>
+                                {{ pengajuan.tanggalMulai|date('d/m/Y') }} - {{ pengajuan.tanggalSelesai|date('d/m/Y') }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                            </td>
+                            <td>
+                                {% if pengajuan.status == 'disetujui' %}
+                                    <span class="badge bg-success">Disetujui</span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Ditolak
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ pengajuan.updatedAt|date('d/m/Y H:i') }}
+                            </td>
+                            <td>
+                                <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Belum ada pengajuan yang diproses.
+            </div>
+        {% endif %}
+    </div>
+
+    {# Tab: Pengajuan Saya (untuk Admin) #}
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="tab-pane fade" id="my-requests" role="tabpanel">
+        {% if my_requests|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                            <th><i class="bi bi-calendar"></i> Tanggal</th>
+                            <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                            <th><i class="bi bi-flag"></i> Status</th>
+                            <th><i class="bi bi-calendar-event"></i> Diajukan</th>
+                            <th><i class="bi bi-tools"></i> Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pengajuan in my_requests %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                            </td>
+                            <td>
+                                {{ pengajuan.tanggalMulai|date('d/m/Y') }}<br>
+                                <small class="text-muted">s/d {{ pengajuan.tanggalSelesai|date('d/m/Y') }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                            </td>
+                            <td>
+                                {% set status = pengajuan.status %}
+                                {% if status == 'draft' %}
+                                    <span class="badge bg-secondary">Draft</span>
+                                {% elseif status == 'diajukan' %}
+                                    <span class="badge bg-warning">Menunggu</span>
+                                {% elseif status == 'disetujui' %}
+                                    <span class="badge bg-success">Disetujui</span>
+                                {% elseif status == 'ditolak' %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Ditolak
+                                    </span>
+                                {% elseif status == 'dibatalkan' %}
+                                    <span class="badge bg-dark">Dibatalkan</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                       class="btn btn-outline-primary btn-sm" title="Lihat Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    
+                                    {% if pengajuan.status in ['draft', 'ditolak'] %}
+                                    <a href="{{ path('pengajuan_cuti_edit', {id: pengajuan.id}) }}" 
+                                       class="btn btn-{% if pengajuan.status == 'ditolak' %}warning{% else %}outline-warning{% endif %} btn-sm" 
+                                       title="{% if pengajuan.status == 'ditolak' %}Perbaiki dan Ajukan Ulang{% else %}Edit{% endif %}">
+                                        <i class="bi bi-{% if pengajuan.status == 'ditolak' %}arrow-repeat{% else %}pencil{% endif %}"></i>
+                                        {% if pengajuan.status == 'ditolak' %} Perbaiki{% endif %}
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 
+                Belum ada pengajuan cuti. 
+                <a href="{{ path('pengajuan_cuti_new') }}" class="alert-link">Ajukan cuti pertama Anda</a>.
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% else %}
+    {# Tabs untuk User biasa #}
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="pending-user-tab" data-bs-toggle="tab" data-bs-target="#pending-user" type="button">
+                <i class="bi bi-clock"></i> Menunggu Persetujuan 
+                <span class="badge bg-warning ms-1">{{ pengajuan_list|filter(p => p.status == 'diajukan')|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="processed-user-tab" data-bs-toggle="tab" data-bs-target="#processed-user" type="button">
+                <i class="bi bi-check-all"></i> Sudah Diproses
+                <span class="badge bg-secondary ms-1">{{ pengajuan_list|filter(p => p.status in ['disetujui', 'ditolak'])|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="all-user-tab" data-bs-toggle="tab" data-bs-target="#all-user" type="button">
+                <i class="bi bi-person"></i> Pengajuan Saya
+                <span class="badge bg-primary ms-1">{{ pengajuan_list|length }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        {# Tab: Menunggu Persetujuan #}
+        <div class="tab-pane fade show active" id="pending-user" role="tabpanel">
+            {% set pending_requests = pengajuan_list|filter(p => p.status == 'diajukan') %}
+            {% if pending_requests|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                                <th><i class="bi bi-calendar"></i> Tanggal</th>
+                                <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                                <th><i class="bi bi-flag"></i> Status</th>
+                                <th><i class="bi bi-calendar-event"></i> Diajukan</th>
+                                <th><i class="bi bi-tools"></i> Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pengajuan in pending_requests %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                                </td>
+                                <td>
+                                    {{ pengajuan.tanggalMulai|date('d/m/Y') }}<br>
+                                    <small class="text-muted">s/d {{ pengajuan.tanggalSelesai|date('d/m/Y') }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">Menunggu Persetujuan</span>
+                                </td>
+                                <td>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                           class="btn btn-outline-primary btn-sm" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Tidak ada pengajuan yang menunggu persetujuan.
+                </div>
+            {% endif %}
+        </div>
+
+        {# Tab: Sudah Diproses #}
+        <div class="tab-pane fade" id="processed-user" role="tabpanel">
+            {% set processed_requests = pengajuan_list|filter(p => p.status in ['disetujui', 'ditolak']) %}
+            {% if processed_requests|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                                <th><i class="bi bi-calendar"></i> Tanggal</th>
+                                <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                                <th><i class="bi bi-flag"></i> Status</th>
+                                <th><i class="bi bi-calendar-check"></i> Diproses</th>
+                                <th><i class="bi bi-tools"></i> Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pengajuan in processed_requests %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                                </td>
+                                <td>
+                                    {{ pengajuan.tanggalMulai|date('d/m/Y') }}<br>
+                                    <small class="text-muted">s/d {{ pengajuan.tanggalSelesai|date('d/m/Y') }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                                </td>
+                                <td>
+                                    {% if pengajuan.status == 'disetujui' %}
+                                        <span class="badge bg-success">Disetujui</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ pengajuan.updatedAt|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                           class="btn btn-outline-primary btn-sm" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
+                                        {% if pengajuan.status == 'ditolak' %}
+                                        <a href="{{ path('pengajuan_cuti_edit', {id: pengajuan.id}) }}" 
+                                           class="btn btn-warning btn-sm" title="Perbaiki dan Ajukan Ulang">
+                                            <i class="bi bi-arrow-repeat"></i> Perbaiki
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Belum ada pengajuan yang diproses.
+                </div>
+            {% endif %}
+        </div>
+
+        {# Tab: Semua Pengajuan Saya #}
+        <div class="tab-pane fade" id="all-user" role="tabpanel">
+            {% if pengajuan_list|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="bi bi-list"></i> Jenis Cuti</th>
+                                <th><i class="bi bi-calendar"></i> Tanggal</th>
+                                <th><i class="bi bi-hourglass"></i> Durasi (Hari Kerja)</th>
+                                <th><i class="bi bi-flag"></i> Status</th>
+                                <th><i class="bi bi-calendar-event"></i> Diajukan</th>
+                                <th><i class="bi bi-tools"></i> Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pengajuan in pengajuan_list %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                                </td>
+                                <td>
+                                    {{ pengajuan.tanggalMulai|date('d/m/Y') }}<br>
+                                    <small class="text-muted">s/d {{ pengajuan.tanggalSelesai|date('d/m/Y') }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                                </td>
+                                <td>
+                                    {% set status = pengajuan.status %}
+                                    {% if status == 'draft' %}
+                                        <span class="badge bg-secondary">Draft</span>
+                                    {% elseif status == 'diajukan' %}
+                                        <span class="badge bg-warning">Menunggu</span>
+                                    {% elseif status == 'disetujui' %}
+                                        <span class="badge bg-success">Disetujui</span>
+                                    {% elseif status == 'ditolak' %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </span>
+                                    {% elseif status == 'dibatalkan' %}
+                                        <span class="badge bg-dark">Dibatalkan</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                           class="btn btn-outline-primary btn-sm" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
+                                        {% if pengajuan.status in ['draft', 'ditolak'] %}
+                                        <a href="{{ path('pengajuan_cuti_edit', {id: pengajuan.id}) }}" 
+                                           class="btn btn-{% if pengajuan.status == 'ditolak' %}warning{% else %}outline-warning{% endif %} btn-sm" 
+                                           title="{% if pengajuan.status == 'ditolak' %}Perbaiki dan Ajukan Ulang{% else %}Edit{% endif %}">
+                                            <i class="bi bi-{% if pengajuan.status == 'ditolak' %}arrow-repeat{% else %}pencil{% endif %}"></i>
+                                            {% if pengajuan.status == 'ditolak' %} Perbaiki{% endif %}
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    Belum ada pengajuan cuti. 
+                    <a href="{{ path('pengajuan_cuti_new') }}" class="alert-link">Ajukan cuti pertama Anda</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

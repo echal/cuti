@@ -1,0 +1,378 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detail Pengajuan Cuti{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-eye"></i>
+        Detail Pengajuan Cuti
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            {% if pengajuan.status == 'disetujui' %}
+                <a href="{{ path('pengajuan_cuti_download_pdf', {id: pengajuan.id}) }}" 
+                   class="btn btn-success">
+                    <i class="bi bi-download"></i> Download PDF
+                </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                <form method="post" action="{{ path('pengajuan_cuti_generate_pdf', {id: pengajuan.id}) }}" 
+                      style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('generate_pdf_' ~ pengajuan.id) }}">
+                    <button type="submit" class="btn btn-outline-success">
+                        <i class="bi bi-arrow-clockwise"></i> Regenerate PDF
+                    </button>
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        <a href="{{ path('pengajuan_cuti_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+{# Alert untuk status ditolak #}
+{% if pengajuan.status == 'ditolak' %}
+<div class="alert alert-danger">
+    <div class="d-flex">
+        <div class="flex-shrink-0">
+            <i class="bi bi-x-circle fs-5"></i>
+        </div>
+        <div class="flex-grow-1 ms-3">
+            <h5 class="alert-heading mb-2">Pengajuan Cuti Ditolak</h5>
+            
+            {% if pengajuan.alasanPenolakan %}
+                <div class="mb-3">
+                    <strong>Alasan Penolakan:</strong>
+                    <div class="bg-white p-2 rounded border mt-1">
+                        {{ pengajuan.alasanPenolakan }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if pengajuan.user == app.user %}
+                <div class="border-top pt-3">
+                    <h6><i class="bi bi-info-circle"></i> Langkah Selanjutnya:</h6>
+                    <ol class="mb-0">
+                        <li><strong>Perbaiki pengajuan</strong> berdasarkan alasan penolakan di atas</li>
+                        <li><strong>Klik "Edit Pengajuan"</strong> di panel tindakan sebelah kanan</li>
+                        <li><strong>Ubah informasi yang diperlukan</strong> sesuai dengan alasan penolakan</li>
+                        <li><strong>Ajukan ulang</strong> setelah semua data diperbaiki</li>
+                    </ol>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        {# Detail Pengajuan #}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Informasi Pengajuan</h5>
+                <span class="badge fs-6 
+                    {% if pengajuan.status == 'draft' %}bg-secondary
+                    {% elseif pengajuan.status == 'diajukan' %}bg-warning
+                    {% elseif pengajuan.status == 'disetujui' %}bg-success
+                    {% elseif pengajuan.status == 'ditolak' %}bg-danger
+                    {% elseif pengajuan.status == 'dibatalkan' %}bg-dark
+                    {% endif %}">
+                    {{ pengajuan.status|title }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Pemohon:</th>
+                                <td>
+                                    <strong>{{ pengajuan.user.nama }}</strong><br>
+                                    <small class="text-muted">{{ pengajuan.user.nip }}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Unit Kerja:</th>
+                                <td>{{ pengajuan.user.unitKerja.nama }}</td>
+                            </tr>
+                            <tr>
+                                <th>Jenis Cuti:</th>
+                                <td>
+                                    <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Mulai:</th>
+                                <td>{{ pengajuan.tanggalMulai|date('d F Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Selesai:</th>
+                                <td>{{ pengajuan.tanggalSelesai|date('d F Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lama Cuti (Hari Kerja):</th>
+                                <td>
+                                    <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Alasan:</th>
+                                <td>{{ pengajuan.alasan }}</td>
+                            </tr>
+                            <tr>
+                                <th>Alamat Selama Cuti:</th>
+                                <td>{{ pengajuan.alamatCuti ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Pengajuan:</th>
+                                <td>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                            </tr>
+                            {% if pengajuan.pejabatPenyetuju %}
+                            <tr>
+                                <th>{{ pengajuan.status == 'disetujui' ? 'Disetujui' : 'Ditolak' }} Oleh:</th>
+                                <td>
+                                    {{ pengajuan.pejabatPenyetuju.nama }}<br>
+                                    <small class="text-muted">{{ pengajuan.pejabatPenyetuju.jabatan }}</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Riwayat Status #}
+        {% if pengajuan.riwayatCutis|length > 0 %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Riwayat Perubahan Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for riwayat in pengajuan.riwayatCutis %}
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <div class="badge 
+                                {% if riwayat.aksi == 'diajukan' %}bg-warning
+                                {% elseif riwayat.aksi == 'disetujui' %}bg-success
+                                {% elseif riwayat.aksi == 'ditolak' %}bg-danger
+                                {% elseif riwayat.aksi == 'dibatalkan' %}bg-dark
+                                {% else %}bg-secondary
+                                {% endif %} rounded-pill p-2">
+                                <i class="bi bi-
+                                    {% if riwayat.aksi == 'diajukan' %}clock
+                                    {% elseif riwayat.aksi == 'disetujui' %}check-circle
+                                    {% elseif riwayat.aksi == 'ditolak' %}x-circle
+                                    {% elseif riwayat.aksi == 'dibatalkan' %}dash-circle
+                                    {% else %}circle
+                                    {% endif %}"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-0">{{ riwayat.aksiLabel }}</h6>
+                            <p class="mb-1">{{ riwayat.catatan }}</p>
+                            <small class="text-muted">
+                                {{ riwayat.tanggalAksi|date('d/m/Y H:i') }} - 
+                                {{ riwayat.user.nama }}
+                            </small>
+                        </div>
+                    </div>
+                    {% if not loop.last %}<hr>{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        {# Action Buttons #}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-tools"></i>
+                    Tindakan
+                </h6>
+            </div>
+            <div class="card-body">
+                {# Tombol untuk Pemohon #}
+                {% if pengajuan.user == app.user %}
+                    {% if pengajuan.status in ['draft', 'ditolak'] %}
+                        <a href="{{ path('pengajuan_cuti_edit', {id: pengajuan.id}) }}" 
+                           class="btn btn-warning w-100 mb-2">
+                            <i class="bi bi-pencil"></i> Edit Pengajuan
+                        </a>
+                    {% endif %}
+                    
+                    {% if pengajuan.status in ['diajukan', 'draft'] %}
+                        <form method="post" action="{{ path('pengajuan_cuti_cancel', {id: pengajuan.id}) }}" 
+                              onsubmit="return confirm('Yakin ingin membatalkan pengajuan ini?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ pengajuan.id) }}">
+                            <button type="submit" class="btn btn-outline-danger w-100 mb-2">
+                                <i class="bi bi-x-circle"></i> Batalkan
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+
+                {# Tombol untuk Approver/Admin #}
+                {% if (is_granted('ROLE_APPROVER') or is_granted('ROLE_ADMIN')) and pengajuan.user != app.user %}
+                    {% if pengajuan.status == 'diajukan' %}
+                        <form method="post" action="{{ path('pengajuan_cuti_approve', {id: pengajuan.id}) }}" 
+                              onsubmit="return confirm('Yakin ingin menyetujui pengajuan ini?')" 
+                              class="mb-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('approve_' ~ pengajuan.id) }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle"></i> Setujui
+                            </button>
+                        </form>
+
+                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            <i class="bi bi-x-circle"></i> Tolak
+                        </button>
+                    {% endif %}
+                {% endif %}
+
+                {# Form Nomor Surat untuk Admin #}
+                {% if is_granted('ROLE_ADMIN') and pengajuan.status == 'disetujui' %}
+                    <hr>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Nomor Surat
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if pengajuan.nomorSurat %}
+                                <p class="mb-2"><strong>Nomor:</strong> {{ pengajuan.nomorSurat }}</p>
+                                <small class="text-muted">Nomor surat sudah ditetapkan</small>
+                            {% else %}
+                                <form method="post" action="{{ path('pengajuan_cuti_set_nomor_surat', {id: pengajuan.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('set_nomor_surat_' ~ pengajuan.id) }}">
+                                    <div class="mb-3">
+                                        <input type="text" name="nomor_surat" class="form-control form-control-sm" 
+                                               placeholder="Contoh: 001/Kw.31/1/KP.08.2/{{ 'now'|date('m/Y') }}" required>
+                                        <div class="form-text">Format: Nomor/Kw.31/1/KP.08.2/Bulan/Tahun</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                        <i class="bi bi-save"></i> Simpan Nomor Surat
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <hr>
+                
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Cetak
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {# Info Summary #}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Informasi Tambahan
+                </h6>
+            </div>
+            <div class="card-body">
+                <small>
+                    <strong>Status Kepegawaian:</strong> {{ pengajuan.user.statusKepegawaian }}<br>
+                    <strong>Jenis Kelamin:</strong> {{ pengajuan.user.jenisKelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}<br>
+                    <strong>TMT CPNS:</strong> 
+                    {% if pengajuan.user.tmtCpns %}
+                        {{ pengajuan.user.tmtCpns|date('d/m/Y') }}
+                    {% else %}
+                        <span class="text-muted">Belum diset</span>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Modal untuk Penolakan #}
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-x-circle text-danger"></i>
+                    Tolak Pengajuan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{{ path('pengajuan_cuti_reject', {id: pengajuan.id}) }}">
+                <div class="modal-body">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reject_' ~ pengajuan.id) }}">
+                    
+                    <div class="mb-3">
+                        <label for="alasan_penolakan" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+                        <textarea name="alasan_penolakan" id="alasan_penolakan" 
+                                  class="form-control" rows="3" required 
+                                  placeholder="Jelaskan alasan penolakan pengajuan ini..."></textarea>
+                        <div class="form-text">Alasan ini akan dilihat oleh pemohon</div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <small>Pengajuan yang ditolak dapat diperbaiki dan diajukan kembali oleh pemohon.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Tolak Pengajuan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+@media print {
+    .btn-toolbar, .card:last-child, .modal, nav, .sidebar {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+
+.timeline .d-flex:not(:last-child) {
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}

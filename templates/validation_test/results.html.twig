@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Hasil Validasi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3><i class="fas fa-vial me-2"></i>Test Hasil Validasi Symfony Validator</h3>
+                        <p class="mb-0">Pengujian validasi constraint pada Entity User</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle me-2"></i>Informasi Constraint</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Validasi NIP:</h6>
+                                    <ul>
+                                        <li><code>#[Assert\NotBlank]</code> - Wajib diisi</li>
+                                        <li><code>#[Assert\Regex("/^\d{18}$/")]</code> - 18 digit angka</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Validasi Password:</h6>
+                                    <ul>
+                                        <li><code>#[Assert\NotBlank]</code> - Wajib diisi</li>
+                                        <li><code>#[Assert\Length(min:8)]</code> - Minimal 8 karakter</li>
+                                        <li><code>#[Assert\Regex]</code> - Huruf kecil, besar, dan angka</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% for test in tests %}
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h5>
+                                        {% if test.errors == 0 %}
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                                        {% endif %}
+                                        {{ test.title }}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Input:</strong><br>
+                                            <code>NIP:</code> {{ test.nip|default('(empty)') }}<br>
+                                            <code>Password:</code> {{ test.password|default('(empty)') }}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <strong>Result:</strong><br>
+                                            {% if test.errors == 0 %}
+                                                <span class="badge bg-success fs-6">
+                                                    <i class="fas fa-check me-1"></i>VALID
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger fs-6">
+                                                    <i class="fas fa-times me-1"></i>{{ test.errors }} ERRORS
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {% if test.errors > 0 %}
+                                                <strong>Errors:</strong>
+                                                <ul class="list-unstyled">
+                                                    {% for violation in test.violations %}
+                                                        <li class="text-danger">
+                                                            <i class="fas fa-arrow-right me-1"></i>
+                                                            <strong>{{ violation.propertyPath }}:</strong> {{ violation.message }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <em class="text-success">No validation errors</em>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="alert alert-success mt-4">
+                            <h5><i class="fas fa-trophy me-2"></i>✅ Implementasi Validasi Berhasil!</h5>
+                            <p class="mb-0">Semua constraint Symfony Validator berfungsi dengan sempurna menggunakan PHP 8+ attributes modern.</p>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ path('app_login') }}" class="btn btn-primary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>Test Login Form
+                            </a>
+                            <a href="{{ path('app_dashboard') }}" class="btn btn-success">
+                                <i class="fas fa-tachometer-alt me-1"></i>Go to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

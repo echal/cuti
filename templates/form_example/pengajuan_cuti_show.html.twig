@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Pengajuan Cuti</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Detail Pengajuan Cuti #{{ pengajuan_cuti.id }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Informasi Pengaju</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Nama:</strong></td>
+                                        <td>{{ pengajuan_cuti.user.nama }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>NIP:</strong></td>
+                                        <td>{{ pengajuan_cuti.user.nip ?? 'Tidak ada' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Unit Kerja:</strong></td>
+                                        <td>{{ pengajuan_cuti.user.unitKerja.nama }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td>{{ pengajuan_cuti.user.statusKepegawaian }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Informasi Cuti</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Jenis Cuti:</strong></td>
+                                        <td>{{ pengajuan_cuti.jenisCuti.kode }} - {{ pengajuan_cuti.jenisCuti.nama }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tanggal Mulai:</strong></td>
+                                        <td>{{ pengajuan_cuti.tanggalMulai|date('d/m/Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tanggal Selesai:</strong></td>
+                                        <td>{{ pengajuan_cuti.tanggalSelesai|date('d/m/Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Lama Cuti:</strong></td>
+                                        <td>{{ pengajuan_cuti.lamaCuti }} hari</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td>
+                                            <span class="badge {{ pengajuan_cuti.statusBadgeClass }}">
+                                                {{ pengajuan_cuti.status|title }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>Alasan Cuti</h5>
+                                <p class="border p-3 rounded">{{ pengajuan_cuti.alasan }}</p>
+                            </div>
+                        </div>
+
+                        {% if pengajuan_cuti.filePendukung %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h5>File Pendukung</h5>
+                                    <p>{{ pengajuan_cuti.filePendukung }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>Informasi Sistem</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Tanggal Pengajuan:</strong></td>
+                                        <td>{{ pengajuan_cuti.tanggalPengajuan|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Dibuat:</strong></td>
+                                        <td>{{ pengajuan_cuti.createdAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Diperbarui:</strong></td>
+                                        <td>{{ pengajuan_cuti.updatedAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ path('pengajuan_cuti_new') }}" class="btn btn-primary">
+                                Buat Pengajuan Baru
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-4">
+                    <h5>✅ FormType Berhasil Dibuat!</h5>
+                    <p>Form ini mendemonstrasikan fitur-fitur:</p>
+                    <ul class="mb-0">
+                        <li><strong>Dynamic Filtering:</strong> Jenis cuti disesuaikan dengan status kepegawaian user</li>
+                        <li><strong>Validasi Indonesia:</strong> Pesan error dalam bahasa Indonesia</li>
+                        <li><strong>Date Validation:</strong> Tanggal selesai >= tanggal mulai</li>
+                        <li><strong>File Upload:</strong> Support multiple format dengan validasi ukuran</li>
+                        <li><strong>Auto Calculate:</strong> Lama cuti dihitung otomatis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

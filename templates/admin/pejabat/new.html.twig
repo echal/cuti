@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tambah Pejabat Baru{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Tambah Pejabat Baru</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_pejabat_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-plus"></i> Form Tambah Pejabat
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <!-- Personal Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Personal</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.nama) }}
+                                {{ form_errors(form.nama) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.nip, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nip) }}
+                                {{ form_errors(form.nip) }}
+                                {% if form.nip.vars.help %}
+                                    <div class="form-text">{{ form.nip.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Position Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Jabatan</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.jabatan, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.jabatan) }}
+                                {{ form_errors(form.jabatan) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.unitKerja, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.unitKerja) }}
+                                {{ form_errors(form.unitKerja) }}
+                                {% if form.unitKerja.vars.help %}
+                                    <div class="form-text">{{ form.unitKerja.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.status, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.status) }}
+                                {{ form_errors(form.status) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.mulaiMenjabat, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.mulaiMenjabat) }}
+                                {{ form_errors(form.mulaiMenjabat) }}
+                                {% if form.mulaiMenjabat.vars.help %}
+                                    <div class="form-text">{{ form.mulaiMenjabat.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.selesaiMenjabat, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.selesaiMenjabat) }}
+                                {{ form_errors(form.selesaiMenjabat) }}
+                                {% if form.selesaiMenjabat.vars.help %}
+                                    <div class="form-text">{{ form.selesaiMenjabat.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i> Tambah Pejabat
+                    </button>
+                    <a href="{{ path('admin_pejabat_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Panduan Pengisian
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Nama:</strong> Nama lengkap sesuai dokumen resmi</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>NIP:</strong> 18 digit angka (opsional)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Jabatan:</strong> Sesuai SK pengangkatan</small>
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Unit Kerja:</strong> Kosongkan untuk pejabat struktural</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Contoh Jabatan
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted">Pejabat Struktural:</h6>
+                <div class="mb-3">
+                    <small class="d-block">• Kepala Kantor Wilayah</small>
+                    <small class="d-block">• Kepala Bagian Tata Usaha</small>
+                    <small class="d-block">• Kepala Bidang</small>
+                </div>
+                
+                <h6 class="text-muted">Pejabat Fungsional:</h6>
+                <div class="mb-0">
+                    <small class="d-block">• Kepala Seksi</small>
+                    <small class="d-block">• Staf Ahli</small>
+                    <small class="d-block">• Pengawas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

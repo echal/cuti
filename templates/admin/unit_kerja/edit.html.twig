@@ -1,0 +1,157 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ unit_kerja.nama }} - Unit Kerja{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Unit Kerja</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_unit_kerja_show', {'id': unit_kerja.id}) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pencil"></i> Form Edit Unit Kerja
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.kode, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.kode) }}
+                            {{ form_errors(form.kode) }}
+                            {% if form.kode.vars.help %}
+                                <div class="form-text">{{ form.kode.vars.help }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.nama) }}
+                            {{ form_errors(form.nama) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Simpan Perubahan
+                    </button>
+                    <a href="{{ path('admin_unit_kerja_show', {'id': unit_kerja.id}) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Current Values Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Nilai Saat Ini
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Kode:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary">{{ unit_kerja.kode }}</span>
+                    </dd>
+                    
+                    <dt class="col-sm-4">Nama:</dt>
+                    <dd class="col-sm-8">{{ unit_kerja.nama }}</dd>
+                    
+                    <dt class="col-sm-4">User:</dt>
+                    <dd class="col-sm-8">{{ unit_kerja.users|length }} orang</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <!-- Change Log Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Riwayat
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-6">Dibuat:</dt>
+                    <dd class="col-sm-6">
+                        <small>{{ unit_kerja.createdAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Diperbarui:</dt>
+                    <dd class="col-sm-6">
+                        <small>{{ unit_kerja.updatedAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        <!-- Usage Warning -->
+        {% if unit_kerja.users|length > 0 %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Perhatian!</strong><br>
+            Unit kerja ini memiliki {{ unit_kerja.users|length }} user terkait. 
+            Perubahan yang dibuat dapat mempengaruhi data user yang sudah ada.
+        </div>
+        {% endif %}
+        
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Bantuan
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <small><strong>Kode:</strong> Harus unik dan hanya berisi huruf kapital dan angka</small>
+                    </li>
+                    <li class="mb-2">
+                        <small><strong>Nama:</strong> Nama lengkap unit kerja</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Real-time validation for kode field
+    const kodeField = document.getElementById('unit_kerja_kode');
+    if (kodeField) {
+        kodeField.addEventListener('input', function() {
+            let value = this.value.toUpperCase();
+            value = value.replace(/[^A-Z0-9]/g, '');
+            this.value = value;
+            
+            const isValid = /^[A-Z0-9]{2,20}$/.test(value);
+            this.classList.toggle('is-valid', isValid);
+            this.classList.toggle('is-invalid', !isValid && value.length > 0);
+        });
+    }
+});
+</script>
+{% endblock %}

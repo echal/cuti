@@ -1,0 +1,233 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manajemen Hari Libur{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-calendar-x"></i>
+        Manajemen Hari Libur
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <!-- Import Default Holidays Button -->
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="bi bi-download"></i> Import Default
+            </button>
+            
+            <a href="{{ path('admin_hari_libur_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Tambah Hari Libur
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if hari_libur_by_year is empty %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Belum ada data hari libur. 
+        <a href="{{ path('admin_hari_libur_new') }}" class="alert-link">Tambahkan hari libur pertama</a> 
+        atau gunakan tombol "Import Default" untuk mengimpor hari libur nasional.
+    </div>
+{% else %}
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Total Hari Libur</h5>
+                    {% set total = 0 %}
+                    {% for year, holidays in hari_libur_by_year %}
+                        {% set total = total + holidays|length %}
+                    {% endfor %}
+                    <h3 class="text-primary">{{ total }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Tahun {{ current_year }}</h5>
+                    <h3 class="text-info">
+                        {{ hari_libur_by_year[current_year]|default([])|length }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Tahun Terdaftar</h5>
+                    <h3 class="text-success">{{ hari_libur_by_year|keys|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Tahun Mendatang</h5>
+                    <h3 class="text-warning">
+                        {{ hari_libur_by_year[(current_year + 1)]|default([])|length }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs by Year -->
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        {% for year in hari_libur_by_year|keys|sort|reverse %}
+            <li class="nav-item">
+                <button class="nav-link {% if year == current_year %}active{% endif %}" 
+                        id="year-{{ year }}-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#year-{{ year }}" 
+                        type="button">
+                    {{ year }} 
+                    <span class="badge bg-secondary ms-1">{{ hari_libur_by_year[year]|length }}</span>
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+        {% for year in hari_libur_by_year|keys|sort|reverse %}
+            <div class="tab-pane fade {% if year == current_year %}show active{% endif %}" 
+                 id="year-{{ year }}" role="tabpanel">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Hari Libur Tahun {{ year }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if hari_libur_by_year[year] is empty %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                Belum ada hari libur untuk tahun {{ year }}.
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Hari</th>
+                                            <th>Keterangan</th>
+                                            <th>Dibuat</th>
+                                            <th width="120">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for hari_libur in hari_libur_by_year[year] %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ hari_libur.tanggal|date('d F Y') }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    {{ hari_libur.tanggal|date('l')|trans }}
+                                                </span>
+                                            </td>
+                                            <td>{{ hari_libur.keterangan }}</td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ hari_libur.createdAt|date('d/m/Y H:i') }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ path('admin_hari_libur_show', {'id': hari_libur.id}) }}" 
+                                                       class="btn btn-outline-info btn-sm" title="Lihat Detail">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a href="{{ path('admin_hari_libur_edit', {'id': hari_libur.id}) }}" 
+                                                       class="btn btn-outline-warning btn-sm" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-outline-danger btn-sm" 
+                                                            title="Hapus"
+                                                            onclick="confirmDelete({{ hari_libur.id }}, '{{ hari_libur.tanggal|date('d/m/Y') }} - {{ hari_libur.keterangan|e('js') }}')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Import Default Modal -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-download text-info"></i>
+                    Import Hari Libur Default
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{{ path('admin_hari_libur_import_default') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="_token" value="{{ csrf_token('import_default') }}">
+                    
+                    <div class="mb-3">
+                        <label for="import_year" class="form-label">Tahun</label>
+                        <select name="year" id="import_year" class="form-select" required>
+                            <option value="{{ current_year }}">{{ current_year }} (Tahun Ini)</option>
+                            <option value="{{ current_year + 1 }}">{{ current_year + 1 }} (Tahun Depan)</option>
+                        </select>
+                        <div class="form-text">Pilih tahun untuk mengimpor hari libur nasional</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Catatan:</strong> 
+                        Fitur ini akan mengimpor hari libur nasional Indonesia. 
+                        Tanggal yang sudah ada tidak akan ditimpa.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="bi bi-download"></i> Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Form (Hidden) -->
+<form id="deleteForm" method="post" style="display: none;">
+    <input type="hidden" name="_token" id="deleteToken">
+</form>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function confirmDelete(id, description) {
+    if (confirm(`Yakin ingin menghapus hari libur "${description}"?`)) {
+        const form = document.getElementById('deleteForm');
+        const token = '{{ csrf_token('delete') }}' + id;
+        
+        form.action = '{{ path('admin_hari_libur_delete', {'id': '__ID__'}) }}'.replace('__ID__', id);
+        document.getElementById('deleteToken').value = token;
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

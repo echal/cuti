@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tambah Unit Kerja Baru{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Tambah Unit Kerja Baru</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_unit_kerja_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Form Tambah Unit Kerja
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.kode, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.kode) }}
+                            {{ form_errors(form.kode) }}
+                            {% if form.kode.vars.help %}
+                                <div class="form-text">{{ form.kode.vars.help }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.nama) }}
+                            {{ form_errors(form.nama) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Tambah Unit Kerja
+                    </button>
+                    <a href="{{ path('admin_unit_kerja_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Quick Reference Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Referensi Unit Kerja
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted">Contoh Unit Kerja:</h6>
+                <div class="mb-3">
+                    <small class="d-block"><strong>BAGTU</strong> - Bagian Tata Usaha</small>
+                    <small class="d-block"><strong>MADRASAH</strong> - Bidang Madrasah</small>
+                    <small class="d-block"><strong>BIMASISLAM</strong> - Bidang Bimbingan Masyarakat Islam</small>
+                    <small class="d-block"><strong>PAPKIS</strong> - Bidang Pendidikan Agama dan Pondok Pesantren</small>
+                    <small class="d-block"><strong>PHU</strong> - Bidang Penyelenggaraan Haji dan Umrah</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Panduan Pengisian
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Kode:</strong> Singkat, unik, huruf kapital (2-20 karakter)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Nama:</strong> Nama lengkap unit kerja (3-255 karakter)</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Validation Rules -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Aturan Validasi
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <ul class="mb-0">
+                        <li><small>Kode harus unik dalam sistem</small></li>
+                        <li><small>Kode hanya boleh huruf kapital dan angka</small></li>
+                        <li><small>Nama minimal 3 karakter</small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Real-time validation for kode field
+    const kodeField = document.getElementById('unit_kerja_kode');
+    if (kodeField) {
+        kodeField.addEventListener('input', function() {
+            let value = this.value.toUpperCase();
+            // Remove non-alphanumeric characters
+            value = value.replace(/[^A-Z0-9]/g, '');
+            this.value = value;
+            
+            // Visual feedback
+            const isValid = /^[A-Z0-9]{2,20}$/.test(value);
+            this.classList.toggle('is-valid', isValid && value.length >= 2);
+            this.classList.toggle('is-invalid', !isValid && value.length > 0);
+        });
+    }
+});
+</script>
+{% endblock %}

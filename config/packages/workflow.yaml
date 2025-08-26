@@ -1,0 +1,35 @@
+framework:
+    workflows:
+        pengajuan_cuti:
+            type: 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'status'
+            supports:
+                - App\Entity\PengajuanCuti
+            initial_marking: draft
+            places:
+                - draft        # Draft
+                - diajukan     # Diajukan
+                - disetujui    # Disetujui
+                - ditolak      # Ditolak
+                - dibatalkan   # Dibatalkan
+            transitions:
+                ajukan:
+                    from: draft
+                    to: diajukan
+                    guard: "subject.getUser() === user"
+                setujui:
+                    from: diajukan
+                    to: disetujui
+                    guard: "is_granted('ROLE_APPROVER')"
+                tolak:
+                    from: diajukan
+                    to: ditolak
+                    guard: "is_granted('ROLE_APPROVER')"
+                batalkan:
+                    from: [draft, diajukan]
+                    to: dibatalkan
+                    guard: "subject.getUser() === user"

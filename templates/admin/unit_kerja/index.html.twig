@@ -1,0 +1,250 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Unit Kerja - Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Kelola Unit Kerja</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_unit_kerja_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Tambah Unit Kerja
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Unit</h6>
+                        <h3 class="mb-0">{{ units|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-building fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Dengan User</h6>
+                        <h3 class="mb-0">{{ units|filter(u => u.users|length > 0)|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total User</h6>
+                        <h3 class="mb-0">{{ units|map(u => u.users|length)|reduce((a, b) => a + b, 0) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-badge fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Kosong</h6>
+                        <h3 class="mb-0">{{ units|filter(u => u.users|length == 0)|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-building-slash fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-search"></i> Pencarian
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Cari Kode/Nama Unit Kerja</label>
+                <input type="text" name="search" class="form-control" 
+                       value="{{ search }}" 
+                       placeholder="Masukkan kode atau nama unit kerja...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Cari
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Units Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i> Daftar Unit Kerja
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if units|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>Kode</th>
+                            <th>Nama Unit Kerja</th>
+                            <th>Jumlah User</th>
+                            <th>Dibuat</th>
+                            <th width="150" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in units %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <strong class="text-primary">{{ unit.kode }}</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ unit.nama }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge {{ unit.users|length > 0 ? 'bg-success' : 'bg-secondary' }}">
+                                        {{ unit.users|length }} user{{ unit.users|length != 1 ? 's' : '' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>{{ unit.createdAt|date('d/m/Y H:i') }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('admin_unit_kerja_show', {'id': unit.id}) }}" 
+                                           class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_unit_kerja_edit', {'id': unit.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{ unit.id }}"
+                                                title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ unit.id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Yakin ingin menghapus unit kerja <strong>{{ unit.nama }}</strong> ({{ unit.kode }})?</p>
+                                                    {% if unit.users|length > 0 %}
+                                                    <div class="alert alert-warning">
+                                                        <i class="bi bi-exclamation-triangle"></i>
+                                                        <strong>Peringatan:</strong> Unit kerja ini memiliki {{ unit.users|length }} user terkait. Penghapusan tidak diizinkan.
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="alert alert-info">
+                                                        <i class="bi bi-info-circle"></i>
+                                                        Unit kerja ini tidak memiliki user terkait dan aman untuk dihapus.
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    {% if unit.users|length == 0 %}
+                                                    <form action="{{ path('admin_unit_kerja_delete', {'id': unit.id}) }}" method="post" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ unit.id) }}">
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i> Ya, Hapus
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-building-x fs-1 text-muted"></i>
+                <p class="text-muted mt-3">
+                    {% if search %}
+                        Tidak ada unit kerja yang sesuai dengan pencarian "{{ search }}".
+                    {% else %}
+                        Belum ada data unit kerja yang tersimpan.
+                    {% endif %}
+                </p>
+                <a href="{{ path('admin_unit_kerja_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Tambah Unit Kerja Pertama
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if units|length > 0 %}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <small class="text-muted">
+                Menampilkan {{ units|length }} unit kerja
+            </small>
+        </div>
+        <div class="col-md-6 text-end">
+            <small class="text-muted">Data terakhir diperbarui: {{ "now"|date("d/m/Y H:i") }}</small>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Enhanced search functionality
+document.querySelector('input[name="search"]').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        this.closest('form').submit();
+    }
+});
+</script>
+{% endblock %}

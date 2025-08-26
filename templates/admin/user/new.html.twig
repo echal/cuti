@@ -1,0 +1,391 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tambah User Baru{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Tambah User Baru</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_user_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-plus"></i> Form Tambah User
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <!-- Basic Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Dasar</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nip, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nip) }}
+                                {{ form_errors(form.nip) }}
+                                {% if form.nip.vars.help %}
+                                    <div class="form-text">{{ form.nip.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.nama) }}
+                                {{ form_errors(form.nama) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.email, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.email) }}
+                                {{ form_errors(form.email) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.plainPassword) }}
+                                {{ form_errors(form.plainPassword) }}
+                                {% if form.plainPassword.vars.help %}
+                                    <div class="form-text">{{ form.plainPassword.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.jenisKelamin, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                <div class="mt-2">
+                                    {{ form_widget(form.jenisKelamin) }}
+                                </div>
+                                {{ form_errors(form.jenisKelamin) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.jumlahAnak, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.jumlahAnak) }}
+                                {{ form_errors(form.jumlahAnak) }}
+                                {% if form.jumlahAnak.vars.help %}
+                                    <div class="form-text">{{ form.jumlahAnak.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Employment Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Kepegawaian</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.statusKepegawaian, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.statusKepegawaian) }}
+                                {{ form_errors(form.statusKepegawaian) }}
+                                {% if form.statusKepegawaian.vars.help %}
+                                    <div class="form-text">{{ form.statusKepegawaian.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.statusPegawai, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.statusPegawai) }}
+                                {{ form_errors(form.statusPegawai) }}
+                                {% if form.statusPegawai.vars.help %}
+                                    <div class="form-text">{{ form.statusPegawai.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.jabatan, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.jabatan) }}
+                                {{ form_errors(form.jabatan) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.golongan, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.golongan) }}
+                                {{ form_errors(form.golongan) }}
+                                {% if form.golongan.vars.help %}
+                                    <div class="form-text">{{ form.golongan.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.unitKerja, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.unitKerja) }}
+                                {{ form_errors(form.unitKerja) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.telp, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.telp) }}
+                                {{ form_errors(form.telp) }}
+                                {% if form.telp.vars.help %}
+                                    <div class="form-text">{{ form.telp.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <!-- Service Dates (for PNS only) -->
+                <fieldset class="mb-4" id="pns-dates">
+                    <legend class="h6 text-primary border-bottom pb-2">Tanggal Kepegawaian (Khusus PNS)</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.tmtCpns, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.tmtCpns) }}
+                                {{ form_errors(form.tmtCpns) }}
+                                {% if form.tmtCpns.vars.help %}
+                                    <div class="form-text">{{ form.tmtCpns.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.tmtPns, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.tmtPns) }}
+                                {{ form_errors(form.tmtPns) }}
+                                {% if form.tmtPns.vars.help %}
+                                    <div class="form-text">{{ form.tmtPns.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i> Tambah User
+                    </button>
+                    <a href="{{ path('admin_user_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Input Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Panduan Pengisian
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>NIP:</strong> 18 digit angka (boleh kosong untuk non-PNS)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Nama:</strong> Nama lengkap sesuai SK/dokumen resmi</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Status Kepegawaian:</strong> Tentukan PNS atau PPPK</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Unit Kerja:</strong> Pilih unit kerja tempat bertugas</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Golongan:</strong> Format contoh: III/a - Penata Muda</small>
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>TMT:</strong> Hanya diisi untuk pegawai PNS</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Status Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Status Kepegawaian
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted">PNS (Pegawai Negeri Sipil)</h6>
+                <ul class="mb-3">
+                    <li><small>Memiliki NIP 18 digit</small></li>
+                    <li><small>Ada TMT CPNS dan TMT PNS</small></li>
+                    <li><small>Bisa mengakses semua jenis cuti</small></li>
+                </ul>
+                
+                <h6 class="text-muted">PPPK (Pegawai Pemerintah dengan Perjanjian Kerja)</h6>
+                <ul class="mb-0">
+                    <li><small>Tidak wajib memiliki NIP</small></li>
+                    <li><small>Tidak ada TMT CPNS/PNS</small></li>
+                    <li><small>Terbatas pada jenis cuti tertentu</small></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Password Information -->
+        <div class="alert alert-info">
+            <i class="bi bi-shield-lock"></i>
+            <strong>Catatan Password:</strong><br>
+            <small>Password default akan diset sama dengan NIP. Jika NIP kosong, password akan diset sebagai "password123" dan user diminta menggantinya saat login pertama.</small>
+        </div>
+
+        <!-- Validation Rules -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Aturan Validasi
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <ul class="mb-0">
+                        <li><small>NIP harus unik jika diisi</small></li>
+                        <li><small>NIP harus tepat 18 digit angka</small></li>
+                        <li><small>Nama minimal 2 karakter</small></li>
+                        <li><small>Jabatan minimal 3 karakter</small></li>
+                        <li><small>Jumlah anak antara 0-20</small></li>
+                        <li><small>TMT tidak boleh lebih dari hari ini</small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const statusKepegawaianField = document.getElementById('user_statusKepegawaian');
+    const pnsDatesFieldset = document.getElementById('pns-dates');
+    const nipField = document.getElementById('user_nip');
+    
+    // Toggle PNS-specific fields based on status kepegawaian
+    function togglePnsFields() {
+        const isPns = statusKepegawaianField.value === 'PNS';
+        
+        if (pnsDatesFieldset) {
+            pnsDatesFieldset.style.display = isPns ? 'block' : 'none';
+        }
+        
+        // Update NIP field requirement
+        if (nipField) {
+            const nipLabel = document.querySelector('label[for="user_nip"]');
+            if (isPns) {
+                nipField.setAttribute('required', 'required');
+                if (nipLabel && !nipLabel.textContent.includes('*')) {
+                    nipLabel.innerHTML += ' <span class="text-danger">*</span>';
+                }
+                nipField.placeholder = 'NIP 18 digit (wajib untuk PNS)';
+            } else {
+                nipField.removeAttribute('required');
+                if (nipLabel) {
+                    nipLabel.innerHTML = nipLabel.innerHTML.replace(' <span class="text-danger">*</span>', '');
+                }
+                nipField.placeholder = 'NIP 18 digit (opsional untuk PPPK)';
+            }
+        }
+    }
+    
+    // Initial toggle
+    if (statusKepegawaianField) {
+        togglePnsFields();
+        statusKepegawaianField.addEventListener('change', togglePnsFields);
+    }
+    
+    // NIP validation
+    if (nipField) {
+        nipField.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, ''); // Remove non-digits
+            this.value = value;
+            
+            // Visual feedback
+            if (value.length === 0) {
+                this.classList.remove('is-valid', 'is-invalid');
+            } else if (value.length === 18) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    }
+    
+    // Jumlah anak validation
+    const jumlahAnakField = document.getElementById('user_jumlahAnak');
+    if (jumlahAnakField) {
+        jumlahAnakField.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value >= 0 && value <= 20) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    }
+    
+    // Form submission confirmation
+    form.addEventListener('submit', function(e) {
+        const nama = document.getElementById('user_nama').value;
+        const nip = nipField ? nipField.value : '';
+        
+        let message = `Yakin ingin menambah user "${nama}"?`;
+        if (nip) {
+            message += `\nNIP: ${nip}`;
+        }
+        message += '\n\nPassword default akan diset sesuai NIP atau "password123" jika NIP kosong.';
+        
+        const confirmed = confirm(message);
+        if (!confirmed) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

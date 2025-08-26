@@ -1,0 +1,280 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ pejabat.nama }} - Pejabat{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Pejabat</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_pejabat_show', {'id': pejabat.id}) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pencil"></i> Form Edit Pejabat
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <!-- Personal Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Personal</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.nama) }}
+                                {{ form_errors(form.nama) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.nip, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nip) }}
+                                {{ form_errors(form.nip) }}
+                                {% if form.nip.vars.help %}
+                                    <div class="form-text">{{ form.nip.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Position Information -->
+                <fieldset class="mb-4">
+                    <legend class="h6 text-primary border-bottom pb-2">Informasi Jabatan</legend>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.jabatan, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.jabatan) }}
+                                {{ form_errors(form.jabatan) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.unitKerja, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.unitKerja) }}
+                                {{ form_errors(form.unitKerja) }}
+                                {% if form.unitKerja.vars.help %}
+                                    <div class="form-text">{{ form.unitKerja.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.status, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.status) }}
+                                {{ form_errors(form.status) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.mulaiMenjabat, null, {'label_attr': {'class': 'form-label required'}}) }}
+                                {{ form_widget(form.mulaiMenjabat) }}
+                                {{ form_errors(form.mulaiMenjabat) }}
+                                {% if form.mulaiMenjabat.vars.help %}
+                                    <div class="form-text">{{ form.mulaiMenjabat.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.selesaiMenjabat, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.selesaiMenjabat) }}
+                                {{ form_errors(form.selesaiMenjabat) }}
+                                {% if form.selesaiMenjabat.vars.help %}
+                                    <div class="form-text">{{ form.selesaiMenjabat.vars.help }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Simpan Perubahan
+                    </button>
+                    <a href="{{ path('admin_pejabat_show', {'id': pejabat.id}) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Current Values Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Nilai Saat Ini
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Nama:</dt>
+                    <dd class="col-sm-8">{{ pejabat.nama }}</dd>
+                    
+                    <dt class="col-sm-4">NIP:</dt>
+                    <dd class="col-sm-8">
+                        {% if pejabat.nip %}
+                            <code>{{ pejabat.nip }}</code>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </dd>
+                    
+                    <dt class="col-sm-4">Jabatan:</dt>
+                    <dd class="col-sm-8">{{ pejabat.jabatan }}</dd>
+                    
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge {{ pejabat.status == 'aktif' ? 'bg-success' : 'bg-danger' }}">
+                            {{ pejabat.status|title }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-4">Pengajuan:</dt>
+                    <dd class="col-sm-8">{{ pejabat.pengajuanCutisPenyetuju|length + pejabat.pengajuanCutisAtasan|length }} terkait</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <!-- Change Log Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Riwayat
+                </h6>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-6">Dibuat:</dt>
+                    <dd class="col-sm-6">
+                        <small>{{ pejabat.createdAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Diperbarui:</dt>
+                    <dd class="col-sm-6">
+                        <small>{{ pejabat.updatedAt|date('d/m/Y H:i') }}</small>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Mulai Jabatan:</dt>
+                    <dd class="col-sm-6">
+                        <small>{{ pejabat.mulaiMenjabat|date('d/m/Y') }}</small>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Selesai Jabatan:</dt>
+                    <dd class="col-sm-6">
+                        {% if pejabat.selesaiMenjabat %}
+                            <small>{{ pejabat.selesaiMenjabat|date('d/m/Y') }}</small>
+                        {% else %}
+                            <small class="text-success">Masih aktif</small>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        <!-- Usage Warning -->
+        {% set total_pengajuan = pejabat.pengajuanCutisPenyetuju|length + pejabat.pengajuanCutisAtasan|length %}
+        {% if total_pengajuan > 0 %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Perhatian!</strong><br>
+            Pejabat ini terkait dengan {{ total_pengajuan }} pengajuan cuti. 
+            Perubahan yang dibuat dapat mempengaruhi data yang sudah ada.
+        </div>
+        {% endif %}
+        
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Bantuan
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <small><strong>NIP:</strong> Harus unik jika diisi, format 18 digit</small>
+                    </li>
+                    <li class="mb-2">
+                        <small><strong>Unit Kerja:</strong> Kosongkan untuk pejabat struktural</small>
+                    </li>
+                    <li class="mb-2">
+                        <small><strong>Status:</strong> Aktif untuk pejabat yang masih bertugas</small>
+                    </li>
+                    <li class="mb-0">
+                        <small><strong>Selesai Menjabat:</strong> Kosongkan jika masih aktif</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // NIP validation
+    const nipField = document.getElementById('pejabat_nip');
+    if (nipField) {
+        nipField.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, ''); // Remove non-digits
+            this.value = value;
+            
+            // Visual feedback
+            if (value.length === 0) {
+                this.classList.remove('is-valid', 'is-invalid');
+            } else if (value.length === 18) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    }
+    
+    // Date validation - ensure selesai > mulai
+    const mulaiField = document.getElementById('pejabat_mulaiMenjabat');
+    const selesaiField = document.getElementById('pejabat_selesaiMenjabat');
+    
+    function validateDates() {
+        if (mulaiField && selesaiField && mulaiField.value && selesaiField.value) {
+            const mulai = new Date(mulaiField.value);
+            const selesai = new Date(selesaiField.value);
+            
+            if (selesai <= mulai) {
+                selesaiField.classList.add('is-invalid');
+                selesaiField.classList.remove('is-valid');
+            } else {
+                selesaiField.classList.remove('is-invalid');
+                selesaiField.classList.add('is-valid');
+            }
+        }
+    }
+    
+    if (mulaiField) mulaiField.addEventListener('change', validateDates);
+    if (selesaiField) selesaiField.addEventListener('change', validateDates);
+});
+</script>
+{% endblock %}

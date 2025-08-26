@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajukan Cuti Baru{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-calendar-plus"></i>
+        Ajukan Cuti Baru
+    </h1>
+</div>
+
+{{ include('pengajuan_cuti/_form.html.twig') }}
+
+{% endblock %}

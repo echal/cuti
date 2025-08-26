@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profil{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-pencil"></i>
+        Edit Profil
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('profile_show') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person"></i>
+                    Informasi Pribadi
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.nama) }}
+                            {{ form_widget(form.nama) }}
+                            {{ form_errors(form.nama) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.nip) }}
+                            {{ form_widget(form.nip) }}
+                            {{ form_errors(form.nip) }}
+                            <div class="form-text">NIP optional, bisa dikosongkan jika belum ada</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.email) }}
+                            {{ form_widget(form.email) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.telp) }}
+                            {{ form_widget(form.telp) }}
+                            {{ form_errors(form.telp) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.jenisKelamin) }}
+                            {{ form_widget(form.jenisKelamin) }}
+                            {{ form_errors(form.jenisKelamin) }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.jabatan) }}
+                            {{ form_widget(form.jabatan) }}
+                            {{ form_errors(form.jabatan) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.golongan) }}
+                            {{ form_widget(form.golongan) }}
+                            {{ form_errors(form.golongan) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.unitKerja) }}
+                            {{ form_widget(form.unitKerja) }}
+                            {{ form_errors(form.unitKerja) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.statusKepegawaian) }}
+                            {{ form_widget(form.statusKepegawaian) }}
+                            {{ form_errors(form.statusKepegawaian) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.masaKerja) }}
+                            {{ form_widget(form.masaKerja) }}
+                            {{ form_errors(form.masaKerja) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.tmtCpns) }}
+                            {{ form_widget(form.tmtCpns) }}
+                            {{ form_errors(form.tmtCpns) }}
+                            {{ form_help(form.tmtCpns) }}
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('profile_show') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Batal
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan Perubahan
+                    </button>
+                </div>
+                
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Informasi
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tips:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Lengkapi profil untuk mempermudah proses pengajuan cuti</li>
+                        <li>NIP dapat dikosongkan jika belum memiliki</li>
+                        <li>Email akan digunakan untuk notifikasi sistem</li>
+                        <li>Nomor telepon untuk keperluan komunikasi</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Field yang Wajib:</h6>
+                    <small class="text-muted">
+                        • Nama Lengkap<br>
+                        • Unit Kerja (untuk pengajuan cuti)<br>
+                        • Status Kepegawaian (untuk template dokumen)
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-lock"></i>
+                    Keamanan Akun
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted">Ingin mengubah password?</p>
+                <a href="{{ path('profile_change_password') }}" class="btn btn-outline-warning">
+                    <i class="bi bi-key"></i> Ubah Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const namaField = document.getElementById('profile_nama');
+    
+    if (form && namaField) {
+        form.addEventListener('submit', function(e) {
+            if (!namaField.value.trim()) {
+                e.preventDefault();
+                alert('Nama lengkap harus diisi!');
+                namaField.focus();
+                return false;
+            }
+        });
+    }
+    
+    // Auto-format NIP
+    const nipField = document.getElementById('profile_nip');
+    if (nipField) {
+        nipField.addEventListener('input', function() {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+    
+    // Auto-format phone number
+    const telpField = document.getElementById('profile_telp');
+    if (telpField) {
+        telpField.addEventListener('input', function() {
+            // Remove non-numeric characters except + and -
+            this.value = this.value.replace(/[^\d\+\-\s]/g, '');
+        });
+    }
+});
+</script>
+{% endblock %}

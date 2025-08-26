@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Pengajuan Cuti{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-pencil-square"></i>
+        Edit Pengajuan Cuti
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <span class="badge bg-{% if pengajuan.status == 'draft' %}secondary{% else %}danger{% endif %} fs-6">
+            {{ pengajuan.status|title }}
+        </span>
+    </div>
+</div>
+
+{# Alert untuk status #}
+{% if pengajuan.status == 'ditolak' %}
+<div class="alert alert-danger">
+    <i class="bi bi-x-circle"></i>
+    <strong>Pengajuan Cuti Ditolak</strong>
+    {% if pengajuan.alasanPenolakan %}
+        <br><strong>Alasan:</strong> {{ pengajuan.alasanPenolakan }}
+    {% endif %}
+    
+    <hr>
+    <div class="mb-3">
+        <h6><i class="bi bi-info-circle"></i> Langkah Selanjutnya:</h6>
+        <ol class="mb-0">
+            <li><strong>Perbaiki pengajuan</strong> berdasarkan alasan penolakan di atas</li>
+            <li><strong>Ubah tanggal atau informasi lain</strong> yang diperlukan</li>
+            <li><strong>Klik "Ajukan Ulang"</strong> untuk mengirim pengajuan yang telah diperbaiki</li>
+        </ol>
+    </div>
+    
+    <div class="alert alert-info mb-0">
+        <small>
+            <i class="bi bi-lightbulb"></i>
+            <strong>Tips:</strong> Pastikan semua data sudah benar dan sesuai dengan alasan penolakan sebelum mengajukan ulang.
+        </small>
+    </div>
+</div>
+{% endif %}
+
+{{ include('pengajuan_cuti/_form.html.twig') }}
+
+{% endblock %}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: 21.59cm 33cm; /* ukuran kertas legal */
+            margin: 2cm;        /* margin default 2cm */
+        }
+        body { 
+            font-family: "Times New Roman", serif; 
+            font-size: 12px; 
+            line-height: 1.4;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 6px; 
+            font-size: 12px;
+        }
+        td, th { 
+            border: 1px solid black; 
+            padding: 3px; 
+            vertical-align: top; 
+        }
+        .center { text-align: center; }
+        .no-border td { border: none; }
+    </style>
+</head>
+<body>
+
+<!-- Header Peraturan -->
+<div style="margin-left:6cm; font-size:10px; line-height:1.2;">
+    PERATURAN BADAN KEPEGAWAIAN NEGARA<br>
+    REPUBLIK INDONESIA<br>
+    NOMOR 7 TAHUN 2021<br>
+    TENTANG<br>
+    TATA CARA PEMBERIAN CUTI PEGAWAI NEGERI SIPIL
+</div>
+
+<!-- Tempat dan Tanggal -->
+<div style="margin-left:6cm; font-size:12px; text-align:right; margin-top:20px;">
+    Mamuju, {{ tanggal }} {{ bulan }} {{ tahun }}
+</div>
+
+<!-- Tujuan Surat -->
+<div style="margin-left:6cm; font-size:12px; line-height:1.4; margin-top:10px;">
+    Kepada<br>
+    Yth. Kepala Kanwil Kementerian Agama Prov. Sulbar<br>
+    Melalui Kepala Bagian Tata Usaha<br>
+    Kanwil Kementerian Agama Prov. Sulbar<br>
+    di<br>
+    Mamuju
+</div>
+
+<!-- Judul Surat -->
+<div style="text-align:center; font-weight:bold; font-size:12px; margin-top:20px;">
+    PERMINTAAN DAN PEMBERIAN CUTI
+</div>
+<div style="text-align:center; font-weight:bold; font-size:12px;">
+    NOMOR : {{ nomor_surat }}/Kw.31/1/KP.08.2/{{ bulan }}/{{ tahun }}
+</div>
+
+<!-- I. Data Pegawai -->
+<table>
+    <tr><td colspan="4"><b>I. DATA PEGAWAI</b></td></tr>
+    <tr><td>Nama</td><td>{{ user.nama }}</td><td>NIP</td><td>{{ user.nip }}</td></tr>
+    <tr><td>Jabatan</td><td>{{ user.jabatan }}</td><td>Masa Kerja</td><td>{{ user.masaKerja }}</td></tr>
+    <tr><td>Unit Kerja</td><td>{{ user.unitKerja }}</td><td>Pangkat/Gol</td><td>{{ user.golongan }}</td></tr>
+</table>
+
+<!-- II. Jenis Cuti -->
+<table>
+    <tr><td colspan="4"><b>II. JENIS CUTI YANG DIAMBIL</b></td></tr>
+    <tr>
+        <td>1. Cuti Tahunan {% if cuti.jenis == 'tahunan' %}√{% endif %}</td>
+        <td>2. Cuti Besar {% if cuti.jenis == 'besar' %}√{% endif %}</td>
+        <td>3. Cuti Sakit {% if cuti.jenis == 'sakit' %}√{% endif %}</td>
+        <td>4. Cuti Melahirkan {% if cuti.jenis == 'melahirkan' %}√{% endif %}</td>
+    </tr>
+    <tr>
+        <td>5. Cuti Karena Alasan Penting {% if cuti.jenis == 'penting' %}√{% endif %}</td>
+        <td colspan="3">6. Cuti di Luar Tanggungan Negara {% if cuti.jenis == 'diluar' %}√{% endif %}</td>
+    </tr>
+</table>
+
+<!-- III. Alasan Cuti -->
+<table>
+    <tr><td colspan="4"><b>III. ALASAN CUTI</b></td></tr>
+    <tr><td colspan="4">{{ cuti.alasan }}</td></tr>
+</table>
+
+<!-- IV. Lamanya Cuti -->
+<table>
+    <tr><td colspan="4"><b>IV. LAMANYA CUTI</b></td></tr>
+    <tr>
+        <td>Selama</td><td>{{ cuti.lama }} hari</td>
+        <td>Mulai</td>
+        <td>{{ cuti.tanggalMulai|date('d-m-Y') }} s/d {{ cuti.tanggalSelesai|date('d-m-Y') }}</td>
+    </tr>
+</table>
+
+<!-- V. CATATAN CUTI -->
+<table>
+    <tr><td colspan="5"><b>V. CATATAN CUTI***</b></td></tr>
+    <tr>
+        <td><b>Tahun</b></td>
+        <td><b>Sisa</b></td>
+        <td><b>Keterangan</b></td>
+        <td><b>Jenis Cuti</b></td>
+        <td><b>Keterangan Tambahan</b></td>
+    </tr>
+    <tr>
+        <td>N-2</td>
+        <td>{{ cuti.n2sisa ?? '' }}</td>
+        <td>{{ cuti.n2ket ?? '' }}</td>
+        <td rowspan="3">
+            1. CUTI TAHUNAN <br>
+            2. CUTI BESAR <br>
+            3. CUTI SAKIT <br>
+            4. CUTI MELAHIRKAN <br>
+            5. CUTI KARENA ALASAN PENTING <br>
+            6. CUTI DI LUAR TANGGUNGAN NEGARA
+        </td>
+        <td rowspan="3"></td>
+    </tr>
+    <tr>
+        <td>N-1</td>
+        <td>{{ cuti.n1sisa ?? '' }}</td>
+        <td>{{ cuti.n1ket ?? '' }}</td>
+    </tr>
+    <tr>
+        <td>N</td>
+        <td>{{ cuti.nsisa ?? '' }}</td>
+        <td>{{ cuti.nket ?? '' }}</td>
+    </tr>
+</table>
+
+<!-- VI. Alamat -->
+<table>
+    <tr><td colspan="3"><b>VI. ALAMAT SELAMA MENJALANKAN CUTI</b></td></tr>
+    <tr>
+        <td style="width:60%;">{{ cuti.alamatCuti }}</td>
+        <td style="width:20%;">TELP: {{ cuti.telp }}</td>
+        <td style="text-align:center;">
+            Hormat Saya,<br><br><br>
+            ({{ user.nama }})<br>
+            NIP. {{ user.nip }}
+        </td>
+    </tr>
+</table>
+
+<!-- VII. PERTIMBANGAN ATASAN LANGSUNG (Kepala Bidang) -->
+<table>
+    <tr><td colspan="4"><b>VII. PERTIMBANGAN ATASAN LANGSUNG**</b></td></tr>
+    <tr>
+        <td class="center">DISETUJUI</td>
+        <td class="center">PERUBAHAN****</td>
+        <td class="center">DITANGGUHKAN****</td>
+        <td class="center">TIDAK DISETUJUI****</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="height:80px; vertical-align:bottom; text-align:right; padding-right:40px;">
+            Kepala Bidang<br><br><br>
+            ({{ kepalaBidang.nama }})<br>
+            NIP. {{ kepalaBidang.nip }}
+        </td>
+    </tr>
+</table>
+
+<!-- VIII. KEPUTUSAN PEJABAT BERWENANG (Kepala Kantor/Kakanwil) -->
+<table>
+    <tr><td colspan="4"><b>VIII. KEPUTUSAN PEJABAT BERWENANG</b></td></tr>
+    <tr>
+        <td class="center">DISETUJUI</td>
+        <td class="center">PERUBAHAN</td>
+        <td class="center">DITANGGUHKAN</td>
+        <td class="center">TIDAK DISETUJUI</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="height:80px; vertical-align:bottom; text-align:right; padding-right:40px;">
+            Kepala Kantor / Kakanwil<br><br><br>
+            ({{ kepala.nama }})<br>
+            NIP. {{ kepala.nip }}
+        </td>
+    </tr>
+</table>
+
+<!-- Catatan -->
+<div style="margin-top:20px; font-size:12px; text-align:left;">
+    <b>Catatan:</b><br>
+    * Coret yang tidak perlu <br>
+    ** Pilih salah satu dengan memberi tanda centang (√) <br>
+    *** Diisi oleh pejabat yang menangani bidang kepegawaian sebelum PNS mengajukan cuti <br>
+    **** Diberi tanda centang dan alasannya <br>
+    N = Cuti tahun berjalan <br>
+    N-1 = Sisa cuti 1 tahun sebelumnya <br>
+    N-2 = Sisa cuti 2 tahun sebelumnya <br>
+</div>
+
+</body>
+</html>

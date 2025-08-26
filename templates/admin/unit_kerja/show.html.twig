@@ -1,0 +1,213 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ unit_kerja.nama }} - Detail Unit Kerja{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Detail Unit Kerja</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('admin_unit_kerja_edit', {'id': unit_kerja.id}) }}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            {% if unit_kerja.users|length == 0 %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash"></i> Hapus
+            </button>
+            {% endif %}
+        </div>
+        <a href="{{ path('admin_unit_kerja_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<!-- Unit Kerja Details -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Informasi Unit Kerja
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Kode</h6>
+                        <p class="h4 text-primary mb-3">{{ unit_kerja.kode }}</p>
+                        
+                        <h6 class="text-muted">Nama Unit Kerja</h6>
+                        <p class="h5 mb-3">{{ unit_kerja.nama }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Tanggal Dibuat</h6>
+                        <p class="mb-3">{{ unit_kerja.createdAt|date('d/m/Y H:i') }}</p>
+                        
+                        <h6 class="text-muted">Terakhir Diperbarui</h6>
+                        <p class="mb-3">{{ unit_kerja.updatedAt|date('d/m/Y H:i') }}</p>
+                        
+                        <h6 class="text-muted">Jumlah User</h6>
+                        <p class="mb-3">
+                            <span class="badge {{ unit_kerja.users|length > 0 ? 'bg-success' : 'bg-secondary' }} fs-6">
+                                {{ unit_kerja.users|length }} user{{ unit_kerja.users|length != 1 ? 's' : '' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Statistics Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Statistik User
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-primary">{{ unit_kerja.users|length }}</h2>
+                    <p class="text-muted">Total User</p>
+                </div>
+                
+                {% if unit_kerja.users|length > 0 %}
+                {% set pns_count = unit_kerja.users|filter(u => u.statusKepegawaian == 'PNS')|length %}
+                {% set pppk_count = unit_kerja.users|filter(u => u.statusKepegawaian == 'PPPK')|length %}
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="p-2 bg-success bg-opacity-10 rounded">
+                            <h5 class="text-success mb-1">{{ pns_count }}</h5>
+                            <small class="text-muted">PNS</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-primary bg-opacity-10 rounded">
+                            <h5 class="text-primary mb-1">{{ pppk_count }}</h5>
+                            <small class="text-muted">PPPK</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-gear"></i> Tindakan
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('admin_unit_kerja_edit', {'id': unit_kerja.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Edit Unit Kerja
+                    </a>
+                    {% if unit_kerja.users|length > 0 %}
+                    <button class="btn btn-outline-info" disabled title="Lihat semua user">
+                        <i class="bi bi-people"></i> Lihat User ({{ unit_kerja.users|length }})
+                    </button>
+                    {% endif %}
+                    {% if unit_kerja.users|length == 0 %}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Hapus Unit Kerja
+                    </button>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <small>Unit kerja tidak dapat dihapus karena masih memiliki {{ unit_kerja.users|length }} user terkait.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User List -->
+{% if unit_kerja.users|length > 0 %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="bi bi-people"></i> Daftar User
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>NIP</th>
+                        <th>Nama</th>
+                        <th>Jabatan</th>
+                        <th>Status</th>
+                        <th width="80">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in unit_kerja.users %}
+                    <tr>
+                        <td>
+                            {% if user.nip %}
+                                <strong>{{ user.nip }}</strong>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.nama }}</td>
+                        <td>{{ user.jabatan }}</td>
+                        <td>
+                            <span class="badge {{ user.statusKepegawaian == 'PNS' ? 'bg-success' : 'bg-primary' }}">
+                                {{ user.statusKepegawaian }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ path('admin_user_show', {'id': user.id}) }}" 
+                               class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Delete Confirmation Modal -->
+{% if unit_kerja.users|length == 0 %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Yakin ingin menghapus unit kerja <strong>{{ unit_kerja.nama }}</strong> ({{ unit_kerja.kode }})?</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    Unit kerja ini tidak memiliki user terkait dan aman untuk dihapus.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ path('admin_unit_kerja_delete', {'id': unit_kerja.id}) }}" method="post" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ unit_kerja.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

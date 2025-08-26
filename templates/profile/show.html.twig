@@ -1,0 +1,268 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil Saya{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-person-circle"></i>
+        Profil Saya
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ path('profile_edit') }}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Edit Profil
+            </a>
+            <a href="{{ path('profile_change_password') }}" class="btn btn-outline-primary">
+                <i class="bi bi-key"></i> Ubah Password
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Data Pribadi -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person"></i>
+                    Data Pribadi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Nama Lengkap:</th>
+                                <td><strong>{{ user.nama }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th>NIP:</th>
+                                <td>{{ user.nip ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ user.email ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>No. Telepon:</th>
+                                <td>
+                                    {% if user.telp %}
+                                        {{ user.telp }}
+                                        <a href="tel:{{ user.telp }}" class="btn btn-outline-success btn-sm ms-1" title="Telepon">
+                                            <i class="bi bi-telephone"></i>
+                                        </a>
+                                        <a href="https://wa.me/{{ user.telp|replace({'+': '', '-': '', ' ': ''}) }}" 
+                                           target="_blank" class="btn btn-success btn-sm" title="Chat di WhatsApp">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Jenis Kelamin:</th>
+                                <td>
+                                    {% if user.jenisKelamin == 'L' %}
+                                        Laki-laki
+                                    {% elseif user.jenisKelamin == 'P' %}
+                                        Perempuan
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Status Kepegawaian:</th>
+                                <td>
+                                    <span class="badge bg-primary">{{ user.statusKepegawaian ?: 'Belum diset' }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Unit Kerja:</th>
+                                <td>{{ user.unitKerja ? user.unitKerja.nama : 'Belum diset' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Jabatan:</th>
+                                <td>{{ user.jabatan ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Golongan:</th>
+                                <td>{{ user.golongan ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Masa Kerja:</th>
+                                <td>{{ user.masaKerja ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>TMT CPNS:</th>
+                                <td>
+                                    {% if user.tmtCpns %}
+                                        {{ user.tmtCpns|date('d/m/Y') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informasi Akun -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check"></i>
+                    Informasi Akun
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Username:</th>
+                                <td><strong>{{ user.username }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Role:</th>
+                                <td>
+                                    {% for role in user.roles %}
+                                        <span class="badge 
+                                            {% if role == 'ROLE_ADMIN' %}bg-danger
+                                            {% elseif role == 'ROLE_APPROVER' %}bg-warning
+                                            {% else %}bg-secondary
+                                            {% endif %}">
+                                            {% if role == 'ROLE_ADMIN' %}Administrator
+                                            {% elseif role == 'ROLE_APPROVER' %}Approver
+                                            {% elseif role == 'ROLE_USER' %}User
+                                            {% else %}{{ role }}
+                                            {% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Akun Dibuat:</th>
+                                <td>
+                                    {% if user.createdAt %}
+                                        {{ user.createdAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Terakhir Update:</th>
+                                <td>
+                                    {% if user.updatedAt %}
+                                        {{ user.updatedAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightning"></i>
+                    Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('pengajuan_cuti_new') }}" class="btn btn-success">
+                        <i class="bi bi-calendar-plus"></i> Ajukan Cuti Baru
+                    </a>
+                    <a href="{{ path('pengajuan_cuti_index') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-list"></i> Lihat Pengajuan Saya
+                    </a>
+                    <a href="{{ path('laporan_index') }}" class="btn btn-outline-info">
+                        <i class="bi bi-bar-chart"></i> Laporan Cuti
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Completeness -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Kelengkapan Profil
+                </h6>
+            </div>
+            <div class="card-body">
+                {% set completeness = 0 %}
+                {% if user.nama %}{% set completeness = completeness + 10 %}{% endif %}
+                {% if user.nip %}{% set completeness = completeness + 15 %}{% endif %}
+                {% if user.email %}{% set completeness = completeness + 10 %}{% endif %}
+                {% if user.telp %}{% set completeness = completeness + 10 %}{% endif %}
+                {% if user.jenisKelamin %}{% set completeness = completeness + 5 %}{% endif %}
+                {% if user.jabatan %}{% set completeness = completeness + 15 %}{% endif %}
+                {% if user.golongan %}{% set completeness = completeness + 10 %}{% endif %}
+                {% if user.unitKerja %}{% set completeness = completeness + 15 %}{% endif %}
+                {% if user.statusKepegawaian %}{% set completeness = completeness + 10 %}{% endif %}
+
+                <div class="progress mb-3">
+                    <div class="progress-bar 
+                        {% if completeness >= 80 %}bg-success
+                        {% elseif completeness >= 50 %}bg-warning
+                        {% else %}bg-danger
+                        {% endif %}" 
+                         role="progressbar" 
+                         style="width: {{ completeness }}%" 
+                         aria-valuenow="{{ completeness }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ completeness }}%
+                    </div>
+                </div>
+                
+                <small class="text-muted">
+                    {% if completeness >= 80 %}
+                        <i class="bi bi-check-circle text-success"></i>
+                        Profil Anda sudah lengkap!
+                    {% elseif completeness >= 50 %}
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        Profil Anda cukup lengkap, tapi masih bisa diperbaiki.
+                    {% else %}
+                        <i class="bi bi-x-circle text-danger"></i>
+                        Profil Anda belum lengkap. Silakan lengkapi data Anda.
+                    {% endif %}
+                </small>
+                
+                <div class="mt-2">
+                    <a href="{{ path('profile_edit') }}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-pencil"></i> Lengkapi Profil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

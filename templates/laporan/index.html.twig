@@ -1,0 +1,340 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Laporan Cuti{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-bar-chart"></i>
+        Laporan Cuti
+    </h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="exportLaporan()">
+            <i class="bi bi-download"></i> Export CSV
+        </button>
+    </div>
+</div>
+
+<!-- Filter Form -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-filter"></i>
+                    Filter Laporan
+                </h6>
+            </div>
+            <div class="card-body">
+                <form method="GET" id="filterForm">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="tahun" class="form-label">Tahun</label>
+                            <select name="tahun" id="tahun" class="form-select form-select-sm">
+                                {% for year in range(date().format('Y')|number_format(0, '', '') - 5, date().format('Y')|number_format(0, '', '') + 1) %}
+                                    <option value="{{ year }}" {{ current_tahun == year ? 'selected' : '' }}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="bulan" class="form-label">Bulan</label>
+                            <select name="bulan" id="bulan" class="form-select form-select-sm">
+                                <option value="">Semua Bulan</option>
+                                <option value="1" {{ current_bulan == '1' ? 'selected' : '' }}>Januari</option>
+                                <option value="2" {{ current_bulan == '2' ? 'selected' : '' }}>Februari</option>
+                                <option value="3" {{ current_bulan == '3' ? 'selected' : '' }}>Maret</option>
+                                <option value="4" {{ current_bulan == '4' ? 'selected' : '' }}>April</option>
+                                <option value="5" {{ current_bulan == '5' ? 'selected' : '' }}>Mei</option>
+                                <option value="6" {{ current_bulan == '6' ? 'selected' : '' }}>Juni</option>
+                                <option value="7" {{ current_bulan == '7' ? 'selected' : '' }}>Juli</option>
+                                <option value="8" {{ current_bulan == '8' ? 'selected' : '' }}>Agustus</option>
+                                <option value="9" {{ current_bulan == '9' ? 'selected' : '' }}>September</option>
+                                <option value="10" {{ current_bulan == '10' ? 'selected' : '' }}>Oktober</option>
+                                <option value="11" {{ current_bulan == '11' ? 'selected' : '' }}>November</option>
+                                <option value="12" {{ current_bulan == '12' ? 'selected' : '' }}>Desember</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select form-select-sm">
+                                <option value="">Semua Status</option>
+                                <option value="draft" {{ current_status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="diajukan" {{ current_status == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                                <option value="disetujui" {{ current_status == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="ditolak" {{ current_status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                <option value="dibatalkan" {{ current_status == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="jenis_cuti" class="form-label">Jenis Cuti</label>
+                            <select name="jenis_cuti" id="jenis_cuti" class="form-select form-select-sm">
+                                <option value="">Semua Jenis</option>
+                                {% for jenis in jenis_cuti_options %}
+                                    <option value="{{ jenis.id }}" {{ current_jenis_cuti == jenis.id ? 'selected' : '' }}>
+                                        {{ jenis.nama }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        {% if is_admin or is_approver %}
+                        <div class="col-md-2">
+                            <label for="user_id" class="form-label">Pegawai</label>
+                            <select name="user_id" id="user_id" class="form-select form-select-sm">
+                                <option value="">Semua Pegawai</option>
+                                {% for user in user_options %}
+                                    <option value="{{ user.id }}" {{ current_user_id == user.id ? 'selected' : '' }}>
+                                        {{ user.nama }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <a href="{{ path('laporan_index') }}" class="btn btn-outline-secondary btn-sm ms-1">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-primary">{{ statistics.total }}</h5>
+                <p class="card-text small mb-0">Total Pengajuan</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-success">{{ statistics.disetujui }}</h5>
+                <p class="card-text small mb-0">Disetujui</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-warning">{{ statistics.diajukan }}</h5>
+                <p class="card-text small mb-0">Menunggu</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-danger">{{ statistics.ditolak }}</h5>
+                <p class="card-text small mb-0">Ditolak</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-secondary">{{ statistics.draft }}</h5>
+                <p class="card-text small mb-0">Draft</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 mb-2">
+        <div class="card text-center">
+            <div class="card-body p-3">
+                <h5 class="card-title text-info">{{ statistics.total_hari }}</h5>
+                <p class="card-text small mb-0">Total Hari</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Jenis Cuti Chart -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Berdasarkan Jenis Cuti</h6>
+            </div>
+            <div class="card-body">
+                {% if statistics.by_jenis %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Jenis Cuti</th>
+                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-center">Total Hari</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for jenis, data in statistics.by_jenis %}
+                                    <tr>
+                                        <td>{{ jenis }}</td>
+                                        <td class="text-center">{{ data.count }}</td>
+                                        <td class="text-center">{{ data.hari }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Tidak ada data</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Chart -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Berdasarkan Bulan</h6>
+            </div>
+            <div class="card-body">
+                {% if statistics.by_bulan %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-center">Total Hari</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] %}
+                                {% for bulan, data in statistics.by_bulan %}
+                                    <tr>
+                                        <td>{{ months[bulan] }}</td>
+                                        <td class="text-center">{{ data.count }}</td>
+                                        <td class="text-center">{{ data.hari }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Tidak ada data</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Data Pengajuan Cuti</h6>
+            </div>
+            <div class="card-body">
+                {% if pengajuan_list %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    {% if is_admin or is_approver %}<th>Unit Kerja</th>{% endif %}
+                                    <th>Jenis Cuti</th>
+                                    <th>Tanggal</th>
+                                    <th class="text-center">Lama (Hari Kerja)</th>
+                                    <th class="text-center">Status</th>
+                                    <th>Pengajuan</th>
+                                    <th width="100">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pengajuan in pengajuan_list %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ pengajuan.user.nama }}</strong>
+                                            {% if is_admin or is_approver %}<br><small class="text-muted">{{ pengajuan.user.nip }}</small>{% endif %}
+                                        </td>
+                                        {% if is_admin or is_approver %}
+                                        <td>{{ pengajuan.user.unitKerja ? pengajuan.user.unitKerja.nama : '-' }}</td>
+                                        {% endif %}
+                                        <td>
+                                            <span class="badge bg-info">{{ pengajuan.jenisCuti.nama }}</span>
+                                        </td>
+                                        <td>
+                                            {{ pengajuan.tanggalMulai|date('d/m/Y') }}<br>
+                                            <small class="text-muted">s/d {{ pengajuan.tanggalSelesai|date('d/m/Y') }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary">{{ pengajuan.lamaCuti }} hari kerja</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge 
+                                                {% if pengajuan.status == 'draft' %}bg-secondary
+                                                {% elseif pengajuan.status == 'diajukan' %}bg-warning
+                                                {% elseif pengajuan.status == 'disetujui' %}bg-success
+                                                {% elseif pengajuan.status == 'ditolak' %}bg-danger
+                                                {% elseif pengajuan.status == 'dibatalkan' %}bg-dark
+                                                {% endif %}">
+                                                {{ pengajuan.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small>{{ pengajuan.tanggalPengajuan|date('d/m/Y H:i') }}</small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('pengajuan_cuti_show', {id: pengajuan.id}) }}" 
+                                               class="btn btn-outline-primary btn-sm" title="Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <p class="text-muted">Tidak ada data pengajuan cuti yang sesuai dengan filter</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function exportLaporan() {
+    // Get current filter parameters
+    const params = new URLSearchParams(window.location.search);
+    
+    // Redirect to export URL with same parameters
+    window.location.href = '{{ path('laporan_export') }}?' + params.toString();
+}
+
+// Auto-submit form when filters change
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('#filterForm select');
+    selects.forEach(function(select) {
+        select.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+});
+</script>
+{% endblock %}

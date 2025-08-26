@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>{{ title }}</h3>
+                        <p class="mb-0">
+                            <strong>Pengaju:</strong> {{ user.nama }} ({{ user.nip }})<br>
+                            <strong>Unit Kerja:</strong> {{ user.unitKerja.nama }}<br>
+                            <strong>Status:</strong> {{ user.statusKepegawaian }}
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        {% for flash_message in app.flashes('success') %}
+                            <div class="alert alert-success">
+                                {{ flash_message }}
+                            </div>
+                        {% endfor %}
+
+                        {% for flash_message in app.flashes('error') %}
+                            <div class="alert alert-danger">
+                                {{ flash_message }}
+                            </div>
+                        {% endfor %}
+
+                        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.jenisCuti) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.tanggalMulai) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.tanggalSelesai) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(form.alasan) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(form.filePendukung) }}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ path('pengajuan_cuti_show', {id: 1}) }}" class="btn btn-secondary me-md-2">
+                                Batal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Ajukan Cuti
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Informasi Penggunaan Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Fitur Dynamic Filtering Jenis Cuti:</h6>
+                        <ul>
+                            <li><strong>PNS:</strong> Dapat mengakses semua jenis cuti (CT, CB, CS, CM, CAP, CLTN)</li>
+                            <li><strong>PPPK:</strong> Hanya dapat mengakses CT, CS, CM, CAP (tidak ada CB & CLTN)</li>
+                        </ul>
+                        
+                        <h6>Validasi Form:</h6>
+                        <ul>
+                            <li>Tanggal selesai harus >= tanggal mulai</li>
+                            <li>Tanggal mulai tidak boleh kurang dari hari ini</li>
+                            <li>Alasan minimal 10 karakter</li>
+                            <li>File pendukung optional (PDF, JPG, PNG, DOC, DOCX max 5MB)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto calculate lama cuti when dates change
+        document.addEventListener('DOMContentLoaded', function() {
+            const tanggalMulai = document.getElementById('pengajuan_cuti_tanggalMulai');
+            const tanggalSelesai = document.getElementById('pengajuan_cuti_tanggalSelesai');
+            
+            function calculateDuration() {
+                if (tanggalMulai.value && tanggalSelesai.value) {
+                    const start = new Date(tanggalMulai.value);
+                    const end = new Date(tanggalSelesai.value);
+                    const timeDiff = end.getTime() - start.getTime();
+                    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+                    
+                    if (dayDiff > 0) {
+                        console.log('Lama cuti: ' + dayDiff + ' hari');
+                    }
+                }
+            }
+            
+            tanggalMulai.addEventListener('change', calculateDuration);
+            tanggalSelesai.addEventListener('change', calculateDuration);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tambah Hari Libur{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-calendar-plus"></i>
+        Tambah Hari Libur Baru
+    </h1>
+    
+    <a href="{{ path('admin_hari_libur_index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Form Tambah Hari Libur</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.tanggal, 'Tanggal Libur', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.tanggal, {'attr': {'class': 'form-control'}}) }}
+                            {% if form.tanggal.vars.help %}
+                                <div class="form-text">{{ form.tanggal.vars.help }}</div>
+                            {% endif %}
+                            {{ form_errors(form.tanggal) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Hari</label>
+                            <input type="text" class="form-control" id="day-display" readonly 
+                                   placeholder="Pilih tanggal untuk melihat hari">
+                            <div class="form-text">Hari akan tampil otomatis setelah memilih tanggal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.keterangan, 'Keterangan', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.keterangan, {'attr': {'class': 'form-control'}}) }}
+                    {% if form.keterangan.vars.help %}
+                        <div class="form-text">{{ form.keterangan.vars.help }}</div>
+                    {% endif %}
+                    {{ form_errors(form.keterangan) }}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('admin_hari_libur_index') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Batal
+                    </a>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan Hari Libur
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Tips Card -->
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <small>Pastikan tanggal yang dimasukkan adalah hari libur resmi</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <small>Gunakan keterangan yang jelas dan mudah dipahami</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <small>Hari libur ini akan mempengaruhi perhitungan cuti pegawai</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                        <small>Tanggal yang sama tidak boleh didaftarkan dua kali</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Example Card -->
+        <div class="card mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-calendar-event"></i> Contoh Hari Libur
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>17 Agustus:</strong> Hari Kemerdekaan RI
+                </div>
+                <div class="mb-2">
+                    <strong>25 Desember:</strong> Hari Raya Natal
+                </div>
+                <div class="mb-2">
+                    <strong>1 Januari:</strong> Tahun Baru
+                </div>
+                <div class="mb-2">
+                    <strong>1 Mei:</strong> Hari Buruh Internasional
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('input[type="date"]');
+    const dayDisplay = document.getElementById('day-display');
+    
+    if (dateInput && dayDisplay) {
+        dateInput.addEventListener('change', function() {
+            if (this.value) {
+                const date = new Date(this.value);
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                dayDisplay.value = days[date.getDay()];
+                
+                // Add class based on day type
+                dayDisplay.classList.remove('text-danger', 'text-warning', 'text-success');
+                if (date.getDay() === 0) { // Sunday
+                    dayDisplay.classList.add('text-danger');
+                } else if (date.getDay() === 6) { // Saturday
+                    dayDisplay.classList.add('text-warning');
+                } else {
+                    dayDisplay.classList.add('text-success');
+                }
+            } else {
+                dayDisplay.value = '';
+                dayDisplay.classList.remove('text-danger', 'text-warning', 'text-success');
+            }
+        });
+        
+        // Trigger change event if date is already selected
+        if (dateInput.value) {
+            dateInput.dispatchEvent(new Event('change'));
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tambah Jenis Cuti Baru{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Tambah Jenis Cuti Baru</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ path('admin_jenis_cuti_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Form Tambah Jenis Cuti
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.kode, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.kode) }}
+                            {{ form_errors(form.kode) }}
+                            {% if form.kode.vars.help %}
+                                <div class="form-text">{{ form.kode.vars.help }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.nama, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.nama) }}
+                            {{ form_errors(form.nama) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.deskripsi, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.deskripsi) }}
+                    {{ form_errors(form.deskripsi) }}
+                    {% if form.deskripsi.vars.help %}
+                        <div class="form-text">{{ form.deskripsi.vars.help }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.durasiMax, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.durasiMax) }}
+                            {{ form_errors(form.durasiMax) }}
+                            {% if form.durasiMax.vars.help %}
+                                <div class="form-text">{{ form.durasiMax.vars.help }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.tersediUntuk, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.tersediUntuk) }}
+                            {{ form_errors(form.tersediUntuk) }}
+                            {% if form.tersediUntuk.vars.help %}
+                                <div class="form-text">{{ form.tersediUntuk.vars.help }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.dasarHukum, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dasarHukum) }}
+                    {{ form_errors(form.dasarHukum) }}
+                    {% if form.dasarHukum.vars.help %}
+                        <div class="form-text">{{ form.dasarHukum.vars.help }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Tambah Jenis Cuti
+                    </button>
+                    <a href="{{ path('admin_jenis_cuti_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x"></i> Batal
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Quick Reference Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Referensi Cepat
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted">Contoh Jenis Cuti:</h6>
+                <div class="mb-3">
+                    <small class="d-block"><strong>CT</strong> - Cuti Tahunan</small>
+                    <small class="d-block"><strong>CB</strong> - Cuti Besar</small>
+                    <small class="d-block"><strong>CS</strong> - Cuti Sakit</small>
+                    <small class="d-block"><strong>CM</strong> - Cuti Melahirkan</small>
+                    <small class="d-block"><strong>CLTN</strong> - Cuti di Luar Tanggungan Negara</small>
+                </div>
+                
+                <h6 class="text-muted">Durasi Umum:</h6>
+                <div class="mb-3">
+                    <small class="d-block">Cuti Tahunan: 12 hari/tahun</small>
+                    <small class="d-block">Cuti Besar: 90 hari (setiap 6 tahun)</small>
+                    <small class="d-block">Cuti Sakit: Sesuai surat dokter</small>
+                    <small class="d-block">Cuti Melahirkan: 90 hari</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Panduan Pengisian
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Kode:</strong> Singkat, unik, huruf kapital (2-10 karakter)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Nama:</strong> Deskriptif dan jelas (3-255 karakter)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Durasi Max:</strong> Kosongkan jika tidak terbatas</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Tersedia Untuk:</strong> Pilih ALL jika berlaku untuk semua</small>
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        <small><strong>Dasar Hukum:</strong> Rujukan peraturan (opsional)</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Validation Rules -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Aturan Validasi
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <ul class="mb-0">
+                        <li><small>Kode harus unik dalam sistem</small></li>
+                        <li><small>Kode hanya boleh huruf kapital dan angka</small></li>
+                        <li><small>Nama minimal 3 karakter</small></li>
+                        <li><small>Durasi maksimal antara 1-9999 hari</small></li>
+                        <li><small>Deskripsi maksimal 1000 karakter</small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Form enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    // Real-time validation for kode field
+    const kodeField = document.getElementById('jenis_cuti_kode');
+    if (kodeField) {
+        kodeField.addEventListener('input', function() {
+            let value = this.value.toUpperCase();
+            // Remove non-alphanumeric characters
+            value = value.replace(/[^A-Z0-9]/g, '');
+            this.value = value;
+            
+            // Visual feedback
+            const isValid = /^[A-Z0-9]{2,10}$/.test(value);
+            this.classList.toggle('is-valid', isValid && value.length >= 2);
+            this.classList.toggle('is-invalid', !isValid && value.length > 0);
+        });
+        
+        // Auto-generate suggestions based on nama field
+        const namaField = document.getElementById('jenis_cuti_nama');
+        if (namaField) {
+            namaField.addEventListener('input', function() {
+                if (kodeField.value === '') {
+                    const words = this.value.split(' ');
+                    let suggestion = '';
+                    words.forEach(word => {
+                        if (word.length > 0) {
+                            suggestion += word.charAt(0).toUpperCase();
+                        }
+                    });
+                    // Limit to reasonable length
+                    suggestion = suggestion.substring(0, 6);
+                    if (suggestion.length >= 2) {
+                        kodeField.placeholder = `Saran: ${suggestion}`;
+                    }
+                }
+            });
+        }
+    }
+    
+    // Auto-resize textarea
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+        function resizeTextarea() {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        
+        textarea.addEventListener('input', resizeTextarea);
+        // Initial resize
+        resizeTextarea();
+    }
+    
+    // Form submission confirmation
+    form.addEventListener('submit', function(e) {
+        const kode = document.getElementById('jenis_cuti_kode').value;
+        const nama = document.getElementById('jenis_cuti_nama').value;
+        
+        if (kode && nama) {
+            const confirmed = confirm(`Yakin ingin menambah jenis cuti "${nama}" dengan kode "${kode}"?`);
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        }
+    });
+    
+    // Tooltips for help text
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
