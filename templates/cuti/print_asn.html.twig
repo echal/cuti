@@ -5,32 +5,72 @@
     <style>
         @page {
             size: 21.59cm 33cm; /* ukuran kertas legal */
-            margin: 2cm;        /* margin default 2cm */
+            margin: 1cm 1.5cm;  /* margin lebih kecil untuk ruang lebih besar */
         }
         body { 
             font-family: "Times New Roman", serif; 
-            font-size: 12px; 
-            line-height: 1.4;
+            font-size: 10px;    /* ukuran font lebih kecil */
+            line-height: 1.2;   /* line-height lebih rapat */
+            margin: 0;
+            padding: 0;
         }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-bottom: 6px; 
-            font-size: 12px;
+            margin-bottom: 4px;  /* margin antar tabel lebih kecil */
+            font-size: 10px;     /* ukuran font tabel lebih kecil */
+            page-break-inside: avoid; /* mencegah tabel terpotong */
         }
         td, th { 
             border: 1px solid black; 
-            padding: 3px; 
-            vertical-align: top; 
+            padding: 2px;        /* padding lebih kecil */
+            vertical-align: top;
+            line-height: 1.1;    /* line-height dalam sel lebih rapat */
         }
         .center { text-align: center; }
         .no-border td { border: none; }
+        
+        /* Khusus untuk bagian yang tinggi */
+        .signature-section {
+            height: 50px !important; /* tinggi lebih kecil untuk tanda tangan */
+        }
+        
+        /* Header section styling */
+        .header-section {
+            font-size: 9px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+        
+        .title-section {
+            font-size: 11px;
+            margin: 8px 0;
+        }
+        
+        /* Compact spacing */
+        .compact { margin: 2px 0; }
+        
+        /* Specific table optimizations */
+        .catatan-cuti-table td {
+            font-size: 9px;
+            padding: 1px 2px;
+        }
+        
+        /* Ensure all content fits in one page */
+        .page-content {
+            max-height: 29cm; /* Maksimal tinggi untuk legal paper dengan margin */
+        }
+        
+        /* Override any potential height issues */
+        * {
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
 <!-- Header Peraturan -->
-<div style="margin-left:6cm; font-size:10px; line-height:1.2;">
+<div class="header-section" style="margin-left:6cm; margin-bottom:5px;">
     PERATURAN BADAN KEPEGAWAIAN NEGARA<br>
     REPUBLIK INDONESIA<br>
     NOMOR 7 TAHUN 2021<br>
@@ -39,25 +79,22 @@
 </div>
 
 <!-- Tempat dan Tanggal -->
-<div style="margin-left:6cm; font-size:12px; text-align:right; margin-top:20px;">
+<div style="margin-left:6cm; font-size:10px; text-align:right; margin-top:8px;">
     Mamuju, {{ tanggal }} {{ bulan }} {{ tahun }}
 </div>
 
 <!-- Tujuan Surat -->
-<div style="margin-left:6cm; font-size:12px; line-height:1.4; margin-top:10px;">
+<div style="margin-left:6cm; font-size:10px; line-height:1.1; margin-top:5px;">
     Kepada<br>
     Yth. Kepala Kanwil Kementerian Agama Prov. Sulbar<br>
     Melalui Kepala Bagian Tata Usaha<br>
     Kanwil Kementerian Agama Prov. Sulbar<br>
-    di<br>
-    Mamuju
+    di Mamuju
 </div>
 
 <!-- Judul Surat -->
-<div style="text-align:center; font-weight:bold; font-size:12px; margin-top:20px;">
-    PERMINTAAN DAN PEMBERIAN CUTI
-</div>
-<div style="text-align:center; font-weight:bold; font-size:12px;">
+<div class="title-section" style="text-align:center; font-weight:bold; margin-top:8px;">
+    PERMINTAAN DAN PEMBERIAN CUTI<br>
     NOMOR : {{ nomor_surat }}/Kw.31/1/KP.08.2/{{ bulan }}/{{ tahun }}
 </div>
 
@@ -101,7 +138,7 @@
 </table>
 
 <!-- V. CATATAN CUTI -->
-<table>
+<table class="catatan-cuti-table">
     <tr><td colspan="5"><b>V. CATATAN CUTI***</b></td></tr>
     <tr>
         <td><b>Tahun</b></td>
@@ -143,7 +180,7 @@
         <td style="width:60%;">{{ cuti.alamatCuti }}</td>
         <td style="width:20%;">TELP: {{ cuti.telp }}</td>
         <td style="text-align:center;">
-            Hormat Saya,<br><br><br>
+            Hormat Saya,<br><br>
             ({{ user.nama }})<br>
             NIP. {{ user.nip }}
         </td>
@@ -160,8 +197,8 @@
         <td class="center">TIDAK DISETUJUI****</td>
     </tr>
     <tr>
-        <td colspan="4" style="height:80px; vertical-align:bottom; text-align:right; padding-right:40px;">
-            Kepala Bidang<br><br><br>
+        <td colspan="4" class="signature-section" style="vertical-align:bottom; text-align:right; padding-right:30px;">
+            Kepala Bidang<br><br>
             ({{ kepalaBidang.nama }})<br>
             NIP. {{ kepalaBidang.nip }}
         </td>
@@ -178,8 +215,8 @@
         <td class="center">TIDAK DISETUJUI</td>
     </tr>
     <tr>
-        <td colspan="4" style="height:80px; vertical-align:bottom; text-align:right; padding-right:40px;">
-            Kepala Kantor / Kakanwil<br><br><br>
+        <td colspan="4" class="signature-section" style="vertical-align:bottom; text-align:right; padding-right:30px;">
+            Kepala Kantor / Kakanwil<br><br>
             ({{ kepala.nama }})<br>
             NIP. {{ kepala.nip }}
         </td>
@@ -187,15 +224,12 @@
 </table>
 
 <!-- Catatan -->
-<div style="margin-top:20px; font-size:12px; text-align:left;">
+<div style="margin-top:8px; font-size:9px; text-align:left; line-height:1.1;">
     <b>Catatan:</b><br>
-    * Coret yang tidak perlu <br>
-    ** Pilih salah satu dengan memberi tanda centang (√) <br>
-    *** Diisi oleh pejabat yang menangani bidang kepegawaian sebelum PNS mengajukan cuti <br>
-    **** Diberi tanda centang dan alasannya <br>
-    N = Cuti tahun berjalan <br>
-    N-1 = Sisa cuti 1 tahun sebelumnya <br>
-    N-2 = Sisa cuti 2 tahun sebelumnya <br>
+    * Coret yang tidak perlu ** Pilih salah satu dengan memberi tanda centang (√)<br>
+    *** Diisi oleh pejabat yang menangani bidang kepegawaian sebelum PNS mengajukan cuti<br>
+    **** Diberi tanda centang dan alasannya<br>
+    N = Cuti tahun berjalan, N-1 = Sisa cuti 1 tahun sebelumnya, N-2 = Sisa cuti 2 tahun sebelumnya
 </div>
 
 </body>

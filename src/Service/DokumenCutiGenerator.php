@@ -192,7 +192,8 @@ class DokumenCutiGenerator
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        // Change to Legal size paper (21.59cm x 33cm)
+        $dompdf->setPaper([0, 0, 612, 936], 'portrait'); // Legal size in points
         $dompdf->render();
 
         return $dompdf->output();
